@@ -1,7 +1,9 @@
 import csv
-from datetime import datetime
 import os
+from datetime import datetime
+
 import pytz
+
 
 def get_timestamp():
     # Get the current time in the Berlin time zone 

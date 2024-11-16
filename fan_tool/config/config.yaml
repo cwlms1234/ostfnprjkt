@@ -5,11 +5,9 @@ temperature_thresholds: # in seconds
     alert_limit: 40
     corridor_size: 5
 
-
 test_values: # TODO remove after testing
     upper: 70
     lower: 20
-
 
 status_messages:
     normal: "asdf"
