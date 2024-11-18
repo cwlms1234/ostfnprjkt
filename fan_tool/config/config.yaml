@@ -13,6 +13,6 @@ status_messages:
     normal: "asdf"
 
 execution_specs:
-    update_interval: 60
+    update_interval: 60 # in seconds
     csv_folder_path: "logs/"
 
