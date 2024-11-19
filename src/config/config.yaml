@@ -15,4 +15,3 @@ status_messages:
 execution_specs:
     update_interval: 60 # in seconds
     csv_folder_path: "logs/"
-
