@@ -2,13 +2,20 @@ import csv
 import os
 from datetime import datetime, timedelta
 
+import pandas as pd
 import pytz
 
 
 def get_timestamp():
     # Get the current time in the Berlin time zone
     berlin_tz = pytz.timezone("Europe/Berlin")
-    return datetime.now(berlin_tz).strftime("%d-%m-%Y %H:%M:%S")
+    timestamp = datetime.now(berlin_tz)
+    return timestamp.replace(
+        hour=timestamp.hour,
+        minute=timestamp.minute,
+        second=timestamp.second,
+        microsecond=0,
+    )
 
 
 def get_date():
@@ -38,6 +45,10 @@ def get_last_month(month, year):
         last_year = year
     return (last_month, last_year)
 
+def fetch_latest_log() -> pd.DataFrame:
+    date = get_date()
+    filename = f"logs/{date}.csv"
+    return pd.read_csv(filename).set_index("Time")
 
 def write_to_file(config, data):
     # Create specified file path if it doesn't already exist

@@ -17,5 +17,12 @@ execution_specs:
     csv_folder_path: !!str "logs/"
 
 csv_headers:
-    timestamp: !!str: "Time"
-    reading: !!str: "Reading"
+    timestamp: !!str "Time"
+    reading: !!str "Reading"
+
+stats:
+    sample_size: !!int 5
+
+# TODO attributes to make modifiable:
+    # temp_thresholds
+    # update_interval
