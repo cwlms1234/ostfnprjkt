@@ -1,6 +1,6 @@
 import csv
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pandas as pd
 import pytz
@@ -45,10 +45,13 @@ def get_last_month(month, year):
         last_year = year
     return (last_month, last_year)
 
+
 def fetch_latest_log() -> pd.DataFrame:
     date = get_date()
     filename = f"logs/{date}.csv"
-    return pd.read_csv(filename).set_index("Time")
+    if os.path.exists(filename):
+        return pd.read_csv(filename).set_index("Time")
+
 
 def write_to_file(config, data):
     # Create specified file path if it doesn't already exist
