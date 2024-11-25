@@ -1,16 +1,14 @@
 import time
-import statistics
+
+import pandas as pd
+import streamlit as st
 from measuring_assets.measuring import (
     append_df_with_new_data,
     build_new_stat_row,
     measure_temp,
 )
-from measuring_assets.test_prop import produce_test_log
 from measuring_assets.utils.measuring_utils import fetch_latest_log
-import pandas as pd
 from utils import fetch_config
-import duckdb
-import streamlit as st
 
 
 def run():
@@ -56,7 +54,6 @@ def run():
 
             # Clear the cache
             data_cache = []
-
 
         if len(stats_df) >= 5:
             pass  # TODO draw chart
