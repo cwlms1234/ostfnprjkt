@@ -1,13 +1,16 @@
 import statistics
+
+import pandas as pd
 from measuring_assets.test_prop import fetch_temperature_measuring_test
 from measuring_assets.utils.measuring_utils import get_timestamp, write_to_file
-import pandas as pd
 
 
 def measure_temp(config: dict, temp_measure: int) -> int:
     temp_measure = fetch_temperature_measuring_test(config["test_values"])
     timestamp = get_timestamp()
-    print(f"\nMeasured {temp_measure} degrees Celsius at {timestamp}") # TODO consider removing
+    print(
+        f"\nMeasured {temp_measure} degrees Celsius at {timestamp}"
+    )  # TODO consider removing
     data = (timestamp, temp_measure)
 
     write_to_file(config, data)
@@ -15,6 +18,7 @@ def measure_temp(config: dict, temp_measure: int) -> int:
     return data
     # time.sleep(5)
     # time.sleep(config["execution_specs"].update_interval)
+
 
 def build_new_stat_row(data_list: list) -> pd.DataFrame:
     # Find out the borders of the interval
@@ -35,12 +39,12 @@ def build_new_stat_row(data_list: list) -> pd.DataFrame:
         index=[index],
     )
 
-
     return new_row_dict, new_row_df
+
 
 def append_df_with_new_data(df: pd.DataFrame, measurement: tuple, config: dict):
     new_row = pd.DataFrame(
         {config["csv_headers"]["reading"]: measurement[1]}, index=[measurement[0]]
     )
 
-    return pd.concat([df,new_row])
+    return pd.concat([df, new_row])
