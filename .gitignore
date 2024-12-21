@@ -45,3 +45,4 @@ build/
 *.egg-info
 .ipynb*/
 static/
+secrets.toml
