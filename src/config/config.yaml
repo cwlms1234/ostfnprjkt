@@ -23,6 +23,13 @@ csv_headers:
 stats:
     sample_size: !!int 5
 
+sqlite:
+    db_name: !!str "test.db"
+    table_name: !!str "temp_readings"
+    table_columns:
+        - timestamp DATETIME
+        - reading FLOAT
+
 # TODO attributes to make modifiable:
     # temp_thresholds
     # update_interval

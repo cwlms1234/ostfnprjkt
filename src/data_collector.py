@@ -1,10 +1,7 @@
 import logging
-import time
+import sqlite3 as sql
 import subprocess
-import duckdb
-import glob
-
-import pandas as pd
+import time
 
 from measuring_assets.measuring import (
     measure_temp,
@@ -28,33 +25,41 @@ console_handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(console_handler)
 
+def execute_sql(db_name, statement):
+    try:
+        with sql.connect(db_name) as conn:
+            conn.execute(statement)
+    except sql.OperationalError as e:
+        logger.error("Failed to open database:", e)
+        
+
+
 def collect_data():
     """Collects temperature data."""
     return measure_temp(run_config)
 
-def insert_data(con, table_name, data):
+def insert_data(db_name, table_name, data):
     """Inserts data into the DuckDB table."""
-    logger.info(f"*** INSERT INTO {table_name} VALUES {data}") # TODO remove
-    con.execute(f"INSERT INTO {table_name} VALUES (?, ?)", data)
+    logger.info(f"*** INSERT INTO {db_name} VALUES {data}") # TODO remove
+    execute_sql(db_name, f"INSERT INTO {table_name} VALUES ('{data[0]}', {data[1]})")
 
-def delete_table(con, table_name):
-    con.execute(f"DROP TABLE IF EXISTS {table_name}")
+def delete_table(con, db_name):
+    con.execute(f"DROP TABLE IF EXISTS {db_name}")
     
 def main():
 
     ### Initialize DuckDB:
-    db_cfg = run_config["duck_db"]
-    table_name = db_cfg["table_name"]
+    db_cfg = run_config["sqlite"]
+    db_name = db_cfg["db_name"]
 
-    # Create Connection
-    con = duckdb.connect(db_cfg["con_name"])
-    logger.info(f"*** Connecting via {con}") # TODO remove
     
     #Create Table
-    column_string = ", ".join(db_cfg["columns"])
+    column_string = ", ".join(db_cfg["table_columns"])
+    create_statement = f"CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} ({column_string})"
+    execute_sql(db_cfg["db_name"], create_statement)
 
-    delete_table(con, table_name)
-    con.execute(f"CREATE TABLE {table_name} ({column_string})")
+
+
     
     # Allow delay for DuckDB initialization
     time.sleep(2)
@@ -65,14 +70,15 @@ def main():
     try: 
         while True:
             data = collect_data()
-            insert_data(con, table_name, data)
+            insert_data(db_cfg["db_name"], db_cfg["table_name"], data)
             time.sleep(5) # get from config
     except Exception as e:
         logger.error(f"Error occurred: {e}")
     finally:
         # Cleanup
-        delete_table(con, table_name)
-        con.close()
+        pass
+        #delete_table(con, table_name)
+        #con.close()
         #TODO consider
         # streamlit_process.terminate()
 

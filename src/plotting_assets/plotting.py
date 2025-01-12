@@ -1,13 +1,9 @@
 # TODO
 # Download Button
 
-import numpy as np
 import pandas as pd
-import streamlit as st
-from datetime import datetime, timedelta
-
-from measuring_assets.utils.measuring_utils import get_timestamp
 import plotly.express as px
+import streamlit as st
 
 filepath = "~/git/ostfnprjkt/logs/11-2024.csv"
 
