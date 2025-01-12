@@ -11,16 +11,9 @@ from measuring_assets.utils.measuring_utils import (
 )
 from utils import execute_sql_to_df
 
-data_cache = []
-delta = 0
 # produce_test_log(run_config)
 
-# These dataframe will store a session's data
-if "df" not in st.session_state:
-    st.session_state["df"] = fetch_latest_log()
 
-if "stat_df" not in st.session_state:
-    st.session_state["stat_df"] = pd.DataFrame(columns=["mean", "median", "max"])
 
 # Initialize the app's layout
 st.title("Fan Control App")
