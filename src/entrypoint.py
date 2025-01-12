@@ -2,6 +2,8 @@ import hmac
 
 import streamlit as st
 
+from utils import fetch_config
+
 
 # Set up loing Page, credentials are stored in ~/.streamlit/secrets.toml
 def check_password():
@@ -44,7 +46,8 @@ if not check_password():
 
 # Main Streamlit app starts here
 
-
+if "config" not in st.session_state:
+    st.session_state["config"] = fetch_config()
 pg = st.navigation(
     [
         st.Page("1_monitoring.py"),

@@ -1,5 +1,5 @@
 
-temperature_thresholds: # in seconds
+temperature_thresholds:
     lower_limit: !!int 20
     upper_limit: !!int 30
     alert_limit: !!int 40
@@ -20,15 +20,20 @@ csv_headers:
     timestamp: !!str "Time"
     reading: !!str "Reading"
 
-stats:
-    sample_size: !!int 5
+analysis_specs:
+    interval_minutes: !!int 5
 
 sqlite:
-    db_name: !!str "test.db"
+    db_name: !!str "test2.db"
     table_name: !!str "temp_readings"
-    table_columns:
-        - timestamp DATETIME
-        - reading FLOAT
+    column_names:
+        timestamp: !!str "Timestamp"
+        reading: !!str "Reading"
+        mean: !!str "Mean"
+        median: !!str "Median"
+        max: !!str "Max"
+        
+        
 
 # TODO attributes to make modifiable:
     # temp_thresholds

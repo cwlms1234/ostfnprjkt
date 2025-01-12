@@ -1,18 +1,16 @@
 import time
+from datetime import timedelta
 
 import pandas as pd
 import streamlit as st
 
-from measuring_assets.measuring import (
-    append_df_with_new_data,
-    build_new_stat_row,
-    measure_temp,
+from measuring_assets.utils.measuring_utils import (
+    fetch_latest_log,
+    format_timestamp,
+    get_timestamp,
 )
-from measuring_assets.utils.measuring_utils import fetch_latest_log
-from utils import fetch_config
+from utils import execute_sql_to_df
 
-datapoint = ("timestamp", 25)  # TODO remove after testing
-run_config = fetch_config()
 data_cache = []
 delta = 0
 # produce_test_log(run_config)
@@ -63,63 +61,55 @@ cooling_placeholder_four.metric(label="cooling_placeholder", value=None)
 # measure_metric_placeholder = st.empty()
 # stat_metric_placeholder = st.empty()
 
+
+# Create more human readable names for config:
+db_config = st.session_state["config"]["sqlite"]
+db_name = st.session_state["config"]["sqlite"]["db_name"]
+table_name = st.session_state["config"]["sqlite"]["table_name"]
+timestamp_col = st.session_state["config"]["sqlite"]["column_names"]["timestamp"]
+reading_col = st.session_state["config"]["sqlite"]["column_names"]["reading"]
+median_col = st.session_state["config"]["sqlite"]["column_names"]["median"]
+mean_col = st.session_state["config"]["sqlite"]["column_names"]["mean"]
+max_col = st.session_state["config"]["sqlite"]["column_names"]["max"]
+
 # Main loop
 while True:
-    datapoint = measure_temp(run_config, datapoint[1])
+    # Fetch Data from the desired analysis window:
+    analysis_interval = get_timestamp() - timedelta(minutes=st.session_state["config"]["analysis_specs"]["interval_minutes"])
+    formatted_interval = format_timestamp(analysis_interval)
+    interval_df = execute_sql_to_df(db_name, f"SELECT * FROM {table_name} WHERE {timestamp_col} >= '{formatted_interval}'")
+    interval_df.sort_values(by=timestamp_col, ascending=True, inplace=True)
 
-    st.session_state["df"] = append_df_with_new_data(
-        st.session_state["df"], datapoint, run_config
-    )
 
-    # Data_cache
-    data_cache.append(datapoint)  # TODO rework to dataframe
-
-    # Create a new row for stats_df once there are sufficient data
-    if len(data_cache) >= run_config["stats"]["sample_size"]:
-        new_stat_row_dict, new_stat_row_df = build_new_stat_row(data_cache)
-        # Append the new row to the existing stats_df
-        st.session_state["stat_df"] = pd.concat(
-            [st.session_state["stat_df"], new_stat_row_df]
-        )  # TODO don't concat with empty df
-
-        print(len(st.session_state["stat_df"]))  # TODO remove after testing
-
-        # Clear the cache
-        data_cache = []
+    latest_row = interval_df.iloc[[-1]]
+    latest_reading = interval_df[reading_col].iloc[[-1]].item()
+    previous_reading = interval_df[reading_col].iloc[[-2]].item()
+    delta = previous_reading - latest_reading 
 
     # Update UI
     measure_metric_placeholder.metric(
         label="Live Temperature",
-        value=f"{datapoint[1]}°",
-        delta=f"{delta}°",  # TODO implement delta
+        value=f"{latest_reading}°C",
+        delta=f"{delta}°C",
+        delta_color="inverse",
     )
 
-    if len(st.session_state["stat_df"]) >= 1:
-        average_metric_placeholder.metric(
-            label="Recent Average", value=f"{new_stat_row_dict["mean"]}°"
-        )
-        median_metric_placeholder.metric(
-            label="Recent Median", value=f"{new_stat_row_dict["median"]}°"
-        )
-        max_metric_placeholder.metric(
-            label="Recent Max", value=f"{new_stat_row_dict["max"]}°"
-        )
+    average_metric_placeholder.metric(
+        label="Recent Average", value=f"{latest_row[mean_col].item()}°"
+    )
+    median_metric_placeholder.metric(
+        label="Recent Median", value=f"{latest_row[median_col].item()}°"
+    )
+    max_metric_placeholder.metric(
+        label="Recent Max", value=f"{latest_row[max_col].item}°"
+    )
 
-    if len(st.session_state["stat_df"]) >= 5:
+    if len(interval_df) >5:
         line_chart_placeholder.line_chart(
-            data=st.session_state["stat_df"], x=None, y=["mean", "median", "max"]
+            data=interval_df, x=None, y=[mean_col, median_col, max_col]
         )  # TODO fetch from config
 
-    # Clean up
-
-    # Drop rows that are no longer needed from df, to prevent memory leak
-    if len(st.session_state["stat_df"]) > 5:  # TODO adjust
-        st.session_state["stat_df"] = st.session_state["stat_df"].tail(5)
-        print(
-            f"\n\n\n\n\n\n{len(st.session_state["stat_df"])}\n\n\n\n\n\n"
-        )  # TODO remove after testing
-
     time.sleep(
-        1
+        6
     )  # TODO time.sleep(run_config["execution_specs"]["update_interval"])
 

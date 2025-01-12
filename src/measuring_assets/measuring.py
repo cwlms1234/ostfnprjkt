@@ -19,7 +19,7 @@ def measure_temp(config: dict) -> int:
     return data
 
 
-def build_new_stat_row(data_list: list) -> pd.DataFrame:
+def build_new_stat_row(data_list: list) -> pd.DataFrame: # TODO probably remove
     # Find out the borders of the interval
     timestamps_list = [item[0] for item in data_list]
     index = max(timestamps_list)
@@ -41,7 +41,7 @@ def build_new_stat_row(data_list: list) -> pd.DataFrame:
     return new_row_dict, new_row_df
 
 
-def append_df_with_new_data(df: pd.DataFrame, measurement: tuple, config: dict):
+def append_df_with_new_data(df: pd.DataFrame, measurement: tuple, config: dict): # TODO probably remove
     new_row = pd.DataFrame(
         {config["csv_headers"]["reading"]: measurement[1]}, index=[measurement[0]]
     )

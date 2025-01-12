@@ -1,12 +1,14 @@
 import logging
-import sqlite3 as sql
+import statistics
 import subprocess
 import time
+from datetime import timedelta
 
 from measuring_assets.measuring import (
     measure_temp,
 )
-from utils import fetch_config
+from measuring_assets.utils.measuring_utils import format_timestamp, get_timestamp
+from utils import execute_sql_select, execute_sql_update, fetch_config
 
 run_config = fetch_config()
 
@@ -24,14 +26,7 @@ console_handler.setFormatter(formatter)
 
 # Add the handler to the logger
 logger.addHandler(console_handler)
-
-def execute_sql(db_name, statement):
-    try:
-        with sql.connect(db_name) as conn:
-            conn.execute(statement)
-    except sql.OperationalError as e:
-        logger.error("Failed to open database:", e)
-        
+       
 
 
 def collect_data():
@@ -40,28 +35,35 @@ def collect_data():
 
 def insert_data(db_name, table_name, data):
     """Inserts data into the DuckDB table."""
-    logger.info(f"*** INSERT INTO {db_name} VALUES {data}") # TODO remove
-    execute_sql(db_name, f"INSERT INTO {table_name} VALUES ('{data[0]}', {data[1]})")
+    #logger.info(f"*** INSERT INTO {db_name} VALUES {data}") # TODO remove
+    execute_sql_update(db_name, f"INSERT INTO {table_name} VALUES ('{data[0]}', {", ".join(map(str, data[1:]))})")
 
-def delete_table(con, db_name):
-    con.execute(f"DROP TABLE IF EXISTS {db_name}")
     
 def main():
 
-    ### Initialize DuckDB:
+    # Fetch config:
     db_cfg = run_config["sqlite"]
-    db_name = db_cfg["db_name"]
 
     
     #Create Table
-    column_string = ", ".join(db_cfg["table_columns"])
-    create_statement = f"CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} ({column_string})"
-    execute_sql(db_cfg["db_name"], create_statement)
+    create_statement = f'''
+    CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} (
+        {db_cfg["column_names"]["timestamp"]} DATETIME,
+        {db_cfg["column_names"]["reading"]} FLOAT,
+        {db_cfg["column_names"]["mean"]} FLOAT,
+        {db_cfg["column_names"]["median"]} FLOAT,
+        {db_cfg["column_names"]["max"]} FLOAT
+    )
+    '''
+
+    
+    print(create_statement)
+    execute_sql_update(db_cfg["db_name"], create_statement)
 
 
 
     
-    # Allow delay for DuckDB initialization
+    # Allow delay for initialization
     time.sleep(2)
 
     # Start the Streamlit app
@@ -70,6 +72,32 @@ def main():
     try: 
         while True:
             data = collect_data()
+            # Calculate relevant timeframe:
+            analysis_interval = get_timestamp() - timedelta(minutes=run_config["analysis_specs"]["interval_minutes"])
+            formatted_interval = format_timestamp(analysis_interval)
+            
+            # Query all readings for the interval
+            interval_temp_query = f"""
+            SELECT {db_cfg["column_names"]["reading"]}
+            FROM {db_cfg["table_name"]}
+            WHERE {db_cfg["column_names"]["timestamp"]} >= '{formatted_interval}'
+            """
+            interval_temps = execute_sql_select(db_cfg["db_name"], interval_temp_query)
+            
+            # Statistics need at least one data point
+            if interval_temps:
+                # Convert list of 1 element tuples into flat list:
+                interval_temps = [row[0] for row in interval_temps]
+                print(f"interval_temps = {interval_temps}") # TODO remove
+                mean_temp = statistics.mean(interval_temps)
+                median_temp = statistics.median(interval_temps) # TODO round
+                max_temp = max(interval_temps)
+                data += (mean_temp, median_temp, max_temp)
+            else:
+                data += (data[1], data[1], data[1])
+
+            print(f"data = {data}") #TODO remove
+
             insert_data(db_cfg["db_name"], db_cfg["table_name"], data)
             time.sleep(5) # get from config
     except Exception as e:
@@ -77,8 +105,6 @@ def main():
     finally:
         # Cleanup
         pass
-        #delete_table(con, table_name)
-        #con.close()
         #TODO consider
         # streamlit_process.terminate()
 

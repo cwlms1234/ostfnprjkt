@@ -10,6 +10,10 @@ def get_timestamp():
     # Get the current time in the Berlin time zone
     berlin_tz = pytz.timezone("Europe/Berlin")
     timestamp = datetime.now(berlin_tz)
+    return format_timestamp(timestamp)
+
+def format_timestamp(timestamp):
+    # Return the current time in the Berlin time zone
     return timestamp.replace(
         hour=timestamp.hour,
         minute=timestamp.minute,
