@@ -1,7 +1,7 @@
 
-temperature_thresholds:
+temperature_thresholds: # test
     lower_limit: !!int 20
-    upper_limit: !!int 30
+    upper_limit: !!int 80
     alert_limit: !!int 40
     corridor_size: !!int 5
 

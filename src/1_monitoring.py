@@ -15,7 +15,7 @@ from utils import execute_sql_to_df
 
 
 
-# Initialize the app's layout
+# Initialize the app's layout with placeholders
 st.title("Fan Control App")
 measure_metric_placeholder = st.empty()
 col1, col2, col3, col4 = st.columns(4)
@@ -55,7 +55,7 @@ cooling_placeholder_four.metric(label="cooling_placeholder", value=None)
 # stat_metric_placeholder = st.empty()
 
 
-# Create more human readable names for config:
+# Create more human readable variable names for config:
 db_config = st.session_state["config"]["sqlite"]
 db_name = st.session_state["config"]["sqlite"]["db_name"]
 table_name = st.session_state["config"]["sqlite"]["table_name"]
@@ -77,9 +77,9 @@ while True:
     latest_row = interval_df.iloc[[-1]]
     latest_reading = interval_df[reading_col].iloc[[-1]].item()
     previous_reading = interval_df[reading_col].iloc[[-2]].item()
-    delta = previous_reading - latest_reading 
+    delta = latest_reading - previous_reading
 
-    # Update UI
+    # Update placeholders
     measure_metric_placeholder.metric(
         label="Live Temperature",
         value=f"{latest_reading}°C",
@@ -94,7 +94,7 @@ while True:
         label="Recent Median", value=f"{latest_row[median_col].item()}°"
     )
     max_metric_placeholder.metric(
-        label="Recent Max", value=f"{latest_row[max_col].item}°"
+        label="Recent Max", value=f"{latest_row[max_col].item()}°"
     )
 
     if len(interval_df) >5:

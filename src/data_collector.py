@@ -90,7 +90,8 @@ def main():
                 interval_temps = [row[0] for row in interval_temps]
                 print(f"interval_temps = {interval_temps}") # TODO remove
                 mean_temp = statistics.mean(interval_temps)
-                median_temp = statistics.median(interval_temps) # TODO round
+                mean_temp = round(mean_temp, 1)
+                median_temp = statistics.median(interval_temps)
                 max_temp = max(interval_temps)
                 data += (mean_temp, median_temp, max_temp)
             else:
