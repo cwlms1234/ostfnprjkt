@@ -5,7 +5,6 @@ import pandas as pd
 import streamlit as st
 
 from measuring_assets.utils.measuring_utils import (
-    fetch_latest_log,
     format_timestamp,
     get_timestamp,
 )
