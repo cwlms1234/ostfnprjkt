@@ -69,8 +69,8 @@ max_col = st.session_state["config"]["sqlite"]["column_names"]["max"]
 while True:
     # Fetch Data from the desired analysis window:
     analysis_interval = get_timestamp() - timedelta(minutes=st.session_state["config"]["analysis_specs"]["interval_minutes"])
-    formatted_interval = format_timestamp(analysis_interval)
-    interval_df = execute_sql_to_df(db_name, f"SELECT * FROM {table_name} WHERE {timestamp_col} >= '{formatted_interval}'")
+    interval_datetime = format_timestamp(analysis_interval)
+    interval_df = execute_sql_to_df(db_name, f"SELECT * FROM {table_name} WHERE {timestamp_col} >= '{interval_datetime}'")
     interval_df.sort_values(by=timestamp_col, ascending=True, inplace=True)
 
 

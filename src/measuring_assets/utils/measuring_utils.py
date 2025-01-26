@@ -7,13 +7,13 @@ import pytz
 
 
 def get_timestamp():
-    # Get the current time in the Berlin time zone
+    """Get the current time in the Berlin time zone"""
     berlin_tz = pytz.timezone("Europe/Berlin")
     timestamp = datetime.now(berlin_tz)
     return format_timestamp(timestamp)
 
 def format_timestamp(timestamp):
-    # Return the current time in the Berlin time zone
+    """Return the current time in the Berlin time zone"""
     return timestamp.replace(
         hour=timestamp.hour,
         minute=timestamp.minute,
@@ -23,13 +23,13 @@ def format_timestamp(timestamp):
 
 
 def get_date():
-    # Get the current year and month
+    """Get the current year and month"""
     berlin_tz = pytz.timezone("Europe/Berlin")
     return datetime.now(berlin_tz).strftime("%m-%Y")
 
 
 def get_last_n_months_files(n):
-    # Get the csv files for the last n months, including the current
+    """Get the csv files for the last n months, including the current"""
     last_n_months = []
     date = datetime.today()
     year = date.year

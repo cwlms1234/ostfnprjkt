@@ -26,12 +26,14 @@ def execute_sql_update(db_name: str, statement: str):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
-def execute_sql_select(db_name:str, statement:str) -> list:
+def execute_sql_select(db_name:str, statement:str, unpack_first_value: bool = False) -> list:
     try:
         with sqlite3.connect(db_name) as conn:
             cursor = conn.cursor()
             cursor.execute(statement)
             result = cursor.fetchall()
+            if unpack_first_value == True:
+                result = result[0][0]
         return result
     except sqlite3.Error as e:
         print(e)
