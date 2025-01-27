@@ -36,3 +36,8 @@ line-length = 100
 docstring-code-format = true
 docstring-code-line-length = 20
 quote-style = "double"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.3",
+]

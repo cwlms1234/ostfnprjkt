@@ -2,6 +2,7 @@
 
 
 devel:
+https://docs.astral.sh/ruff/installation/
 pre-commit install
 
 Installation: set up: https://docs.streamlit.io/knowledge-base/deploy/authentication-without-sso
