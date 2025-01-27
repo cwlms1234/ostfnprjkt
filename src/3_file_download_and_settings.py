@@ -1,8 +1,9 @@
-import streamlit as st
-import pandas as pd
 from datetime import datetime, time
-from utils import execute_sql_select, execute_sql_to_df
 
+import pandas as pd
+import streamlit as st
+
+from utils import execute_sql_select, execute_sql_to_df
 
 if "download_df" not in st.session_state:
     st.session_state["download_df"] = pd.DataFrame()
@@ -38,6 +39,7 @@ newest_timestamp_str = execute_sql_select(
 oldest_timestamp = datetime.fromisoformat(oldest_timestamp_str)
 newest_timestamp = datetime.fromisoformat(newest_timestamp_str)
 
+
 st.write(
     f"Select interval between {newest_timestamp.date()} and {oldest_timestamp.date()} for CSV download."
 )
@@ -55,7 +57,7 @@ end_date = st.date_input(
 # Make sure single day queries return data
 if start_date == end_date:
     start_date = datetime.combine(start_date, time.min)
-    end_date = datetime.combine(end_date, time.max)
+    end_date = datetime.combine(end_date, time.max) # TODO use actual timestamp if this is set to current date
 
 # Set up button row
 col1, col2, col3 = st.columns(spec=3)
@@ -83,4 +85,43 @@ with col3:
 
 if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)
+
+st.markdown('#')
+
+
+with st.expander(label="Adjust config:"):
+
+    st.write("Adjust config.")
+
+    col4, col5, col6 = st.columns([1,1,1])
+    with col4:
+        st.number_input(label="Select update interval in minutes.", step=0.5)
+
+    with col5:
+        st.number_input(label="Min value",step=1)
+
+    with col6:
+        st.number_input(label="Max_value.",step=1)
+
+    st.write("Monitoring parameters:")
+
+    col7, col8, col9 = st.columns([1,1,1])
+    with col7:
+        st.number_input(label="Warning value.", step=1)
+    with col8:
+        st.number_input(label="Alert value.", step=1)
+    with col9:
+        st.number_input(label="Hysteresis value.", step=1)
+
+
+    col10, col11, col12 = st.columns([1.3,1.5,3])
+    with col10:
+        if st.button(label="Write to config."):
+            pass
+    with col11:
+        if st.button(label="Load default config."):
+            pass
+
 # TODO make layout prettier
+# TODO add value parameter based on config to number input
+# TODO read config on every loop in data_collector

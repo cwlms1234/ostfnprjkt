@@ -1,7 +1,6 @@
 import time
 from datetime import timedelta
 
-import pandas as pd
 import streamlit as st
 
 from measuring_assets.utils.measuring_utils import (

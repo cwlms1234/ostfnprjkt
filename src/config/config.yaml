@@ -14,11 +14,11 @@ status_messages:
 
 execution_specs:
     update_interval: !!int 60 # in seconds
-    csv_folder_path: !!str "logs/"
+    #csv_folder_path: !!str "logs/"
 
-csv_headers:
-    timestamp: !!str "Time"
-    reading: !!str "Reading"
+#csv_headers:
+#    timestamp: !!str "Time"
+#    reading: !!str "Reading"
 
 analysis_specs:
     interval_minutes: !!int 5

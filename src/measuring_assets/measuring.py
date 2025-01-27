@@ -3,7 +3,7 @@ import statistics
 import pandas as pd
 
 from measuring_assets.test_prop import fetch_temperature_measuring_test
-from measuring_assets.utils.measuring_utils import get_timestamp#, write_to_file
+from measuring_assets.utils.measuring_utils import get_timestamp  #, write_to_file
 
 
 def measure_temp(config: dict) -> int:
