@@ -5,7 +5,7 @@ import streamlit as st
 from utils import fetch_config
 
 
-# Set up loing Page, credentials are stored in ~/.streamlit/secrets.toml
+# Set up loading Page, credentials are stored in ~/.streamlit/secrets.toml
 def check_password():
     """Returns `True` if the user had a correct password."""
 
