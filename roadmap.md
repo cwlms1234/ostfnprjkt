@@ -6,3 +6,7 @@ ruff -> https://stefaniemolin.com/articles/devx/pre-commit/setup-guide/ ~~> http
 
 bar chart -> occurences when measurements below, within, above limits
 max, med, avg line graph -> min?
+
+delete log folder from git
+
+create backup config
