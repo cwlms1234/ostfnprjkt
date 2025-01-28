@@ -1,40 +1,25 @@
-
-temperature_thresholds: # test
-    lower_limit: !!int 20
-    upper_limit: !!int 80
-    alert_limit: !!int 40
-    corridor_size: !!int 5
-
-test_values: # TODO remove after testing
-    upper: !!int 70
-    lower: !!int 20
-
-status_messages:
-    normal: !!str "asdf"
-
-execution_specs:
-    update_interval: !!int 60 # in seconds
-    #csv_folder_path: !!str "logs/"
-
-#csv_headers:
-#    timestamp: !!str "Time"
-#    reading: !!str "Reading"
-
 analysis_specs:
-    interval_minutes: !!int 5
-
+  interval_minutes: 5
+execution_specs:
+  update_interval: 60
 sqlite:
-    db_name: !!str "test2.db"
-    table_name: !!str "temp_readings"
-    column_names:
-        timestamp: !!str "Timestamp"
-        reading: !!str "Reading"
-        mean: !!str "Mean"
-        median: !!str "Median"
-        max: !!str "Max"
-        
-        
-
-# TODO attributes to make modifiable:
-    # temp_thresholds
-    # update_interval
+  column_names:
+    max: Max
+    mean: Mean
+    median: Median
+    reading: Reading
+    timestamp: Timestamp
+  db_name: test2.db
+  table_name: temp_readings
+status_messages:
+  normal: asdf
+temperature_thresholds:
+  alert_limit: 40
+  corridor_size: 5
+  hysteresis_threshold: 5
+  lower_limit: 20
+  upper_limit: 80
+  warning_limit: 35
+test_values:
+  lower: 20
+  upper: 70

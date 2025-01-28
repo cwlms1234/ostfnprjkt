@@ -3,12 +3,13 @@ from datetime import datetime, time
 import pandas as pd
 import streamlit as st
 
-from utils import execute_sql_select, execute_sql_to_df
+from utils import execute_sql_select, execute_sql_to_df, fetch_config, write_config
 
 if "download_df" not in st.session_state:
     st.session_state["download_df"] = pd.DataFrame()
 
 preview_df = False
+st.session_state["config"] = fetch_config()
 
 # Create more human readable variable names for config:
 db_config = st.session_state["config"]["sqlite"]
@@ -91,34 +92,43 @@ st.markdown('#')
 
 with st.expander(label="Adjust config:"):
 
+    st.write("Measuring Parameters:")
+
     col4, col5, col6 = st.columns([1,1,1])
     with col4:
-        update_interval = st.number_input(label="Select update interval in minutes.", step=0.5)
+        update_interval_minutes = st.number_input(label="Update interval (minutes)", step=0.5, value=float((st.session_state["config"]["execution_specs"]["update_interval"])/60))
+        st.session_state["config"]["execution_specs"]["update_interval"] = update_interval_minutes*60
 
     with col5:
-        min_threshold = st.number_input(label="Min value",step=1)
+        min_threshold = st.number_input(label="Min value (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["lower_limit"])
+        st.session_state["config"]["temperature_thresholds"]["lower_limit"] = min_threshold
 
     with col6:
-        max_threshold = st.number_input(label="Max_value.",step=1)
+        max_threshold = st.number_input(label="Max_value (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["upper_limit"])
+        st.session_state["config"]["temperature_thresholds"]["upper_limit"] = max_threshold
 
-    st.write("Monitoring parameters:")
+    st.write("Monitoring Parameters:")  
 
     col7, col8, col9 = st.columns([1,1,1])
     with col7:
-        warning_threshold = st.number_input(label="Warning value.", step=1)
+        warning_limit = st.number_input(label="Warning value (°C)", step=1, value = st.session_state["config"]["temperature_thresholds"]["warning_limit"])
+        st.session_state["config"]["temperature_thresholds"]["warning_limit"] = warning_limit
     with col8:
-        alert_threshold = st.number_input(label="Alert value.", step=1)
+        alert_limit = st.number_input(label="Alert value (°C)", step=1, value=st.session_state["config"]["temperature_thresholds"]["alert_limit"])
+        st.session_state["config"]["temperature_thresholds"]["alert_limit"] = alert_limit
     with col9:
-        hysteresis_corridor = st.number_input(label="Hysteresis value.", step=1)
+        hysteresis_threshold = st.number_input(label="Hysteresis threshold (°C)", step=1, value=st.session_state["config"]["temperature_thresholds"]["hysteresis_threshold"])
+        st.session_state["config"]["temperature_thresholds"]["hysteresis_threshold"] = hysteresis_threshold
 
 
     col10, col11, col12 = st.columns([1.3,1.5,3])
     with col10:
-        if st.button(label="Write to config."):
-            pass
+        if st.button(label="Write to config"):
+            print(st.session_state["config"])
+            write_config(st.session_state["config"])
     with col11:
-        if st.button(label="Load default config."):
-            pass
+        if st.button(label="Load default config"):
+            write_config(fetch_config("default_config.yaml"))
 
 # TODO make layout prettier
 # TODO add value parameter based on config to number input
