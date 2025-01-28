@@ -64,7 +64,7 @@ if start_date == end_date:
 col1, col2, col3 = st.columns(spec=3)
 
 with col1:
-    if st.button(label="Execute Search"):
+    if st.button(label="Execute Search", use_container_width=True):
         query = f"""SELECT * 
                     FROM {table_name} 
                     WHERE {timestamp_col} >= '{start_date}' 
@@ -73,7 +73,7 @@ with col1:
         st.success(f"Query fechted {len(st.session_state["download_df"])} lines!")
 
 with col2:
-    if st.button(label="Preview Data"):
+    if st.button(label="Preview Data", use_container_width=True):
         preview_df = True
 
 with col3:
@@ -82,6 +82,7 @@ with col3:
         data=st.session_state["download_df"].to_csv().encode("utf-8"),
         file_name=f"{start_date}_{end_date}.csv",
         mime="text/csv",
+        use_container_width=True
     )
 
 if preview_df:
@@ -121,13 +122,13 @@ with st.expander(label="Adjust config:"):
         st.session_state["config"]["temperature_thresholds"]["hysteresis_threshold"] = hysteresis_threshold
 
 
-    col10, col11, col12 = st.columns([1.3,1.5,3])
+    col10, col11 = st.columns(2)
     with col10:
-        if st.button(label="Write to config"):
+        if st.button(label="Write to config", use_container_width=True):
             print(st.session_state["config"])
             write_config(st.session_state["config"])
     with col11:
-        if st.button(label="Load default config"):
+        if st.button(label="Load default config", use_container_width=True):
             write_config(fetch_config("default_config.yaml"))
 
 # TODO make layout prettier
