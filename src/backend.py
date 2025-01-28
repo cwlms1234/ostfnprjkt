@@ -29,12 +29,12 @@ logger.addHandler(console_handler)
        
 
 
-def collect_data():
+def collect_data() -> dict:
     """Collects temperature data."""
     return measure_temp(run_config)
 
-def insert_data(db_name, table_name, data):
-    """Inserts data into the DuckDB table."""
+def insert_data(db_name, table_name, data) -> None:
+    """Inserts data into SQL table."""
     #logger.info(f"*** INSERT INTO {db_name} VALUES {data}") # TODO remove
     execute_sql_update(db_name, f"INSERT INTO {table_name} VALUES ('{data[0]}', {", ".join(map(str, data[1:]))})")
 
@@ -46,7 +46,7 @@ def main():
 
     
     #Create Table
-    create_statement = f'''
+    create_statement = f"""
     CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} (
         {db_cfg["column_names"]["timestamp"]} DATETIME,
         {db_cfg["column_names"]["reading"]} FLOAT,
@@ -54,7 +54,7 @@ def main():
         {db_cfg["column_names"]["median"]} FLOAT,
         {db_cfg["column_names"]["max"]} FLOAT
     )
-    '''
+    """
 
     
     print(create_statement)
@@ -67,7 +67,7 @@ def main():
     time.sleep(2)
 
     # Start the Streamlit app
-    subprocess.Popen(["streamlit", "run", "src/entrypoint.py"])
+    subprocess.Popen(["streamlit", "run", "src/frontend.py"])
     
     try: 
         while True:

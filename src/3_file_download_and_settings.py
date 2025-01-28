@@ -91,27 +91,25 @@ st.markdown('#')
 
 with st.expander(label="Adjust config:"):
 
-    st.write("Adjust config.")
-
     col4, col5, col6 = st.columns([1,1,1])
     with col4:
-        st.number_input(label="Select update interval in minutes.", step=0.5)
+        update_interval = st.number_input(label="Select update interval in minutes.", step=0.5)
 
     with col5:
-        st.number_input(label="Min value",step=1)
+        min_threshold = st.number_input(label="Min value",step=1)
 
     with col6:
-        st.number_input(label="Max_value.",step=1)
+        max_threshold = st.number_input(label="Max_value.",step=1)
 
     st.write("Monitoring parameters:")
 
     col7, col8, col9 = st.columns([1,1,1])
     with col7:
-        st.number_input(label="Warning value.", step=1)
+        warning_threshold = st.number_input(label="Warning value.", step=1)
     with col8:
-        st.number_input(label="Alert value.", step=1)
+        alert_threshold = st.number_input(label="Alert value.", step=1)
     with col9:
-        st.number_input(label="Hysteresis value.", step=1)
+        hysteresis_corridor = st.number_input(label="Hysteresis value.", step=1)
 
 
     col10, col11, col12 = st.columns([1.3,1.5,3])
