@@ -29,15 +29,24 @@ select = [
     "I",
 ]
 
-[tool.ruff]
-line-length = 100
+[build-system]
+requires = ["setuptools~=75.1.0"]
 
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 20
-quote-style = "double"
+build_backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where= ["src"]
+
+[tool.setuptools.package-data]
+# Include arbitrary files in package.
+"*" = ["*.yaml", "*.txt"]
+
+
+[project.scripts]
+cooling_app = "ostfnprjkt.backend:main"
 
 [dependency-groups]
 dev = [
     "ruff>=0.9.3",
+    "pre-commit~=4.0.0",
 ]
