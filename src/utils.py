@@ -27,7 +27,6 @@ def fetch_config(name: str = "config.yaml") -> dict:  # TODO change to class? TO
 
     with open(config_file_path) as file:
         config = yaml.safe_load(file)
-    print(f"\nLoaded Config:\n{json.dumps(config, indent=4)}\n")
     return config
 
 

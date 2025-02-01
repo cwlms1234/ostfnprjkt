@@ -1,3 +1,4 @@
+import json
 import logging
 import statistics
 import subprocess
@@ -10,7 +11,6 @@ from measuring_assets.measuring import (
 from measuring_assets.utils.measuring_utils import format_timestamp, get_timestamp
 from utils import execute_sql_select, execute_sql_update, fetch_config
 
-run_config = fetch_config()
 
 # Set up logging # TODO consider removing
 logger = logging.getLogger()
@@ -42,7 +42,9 @@ def insert_data(db_name, table_name, data) -> None:
 def main():
 
     # Fetch config:
+    run_config = fetch_config()
     db_cfg = run_config["sqlite"]
+    logger.info(f"\nLoaded Config:\n{json.dumps(run_config, indent=4)}\n")
 
     
     #Create Table
@@ -71,6 +73,10 @@ def main():
     
     try: 
         while True:
+            # Fetch config in case a user changed it:
+            run_config = fetch_config()
+            db_cfg = run_config["sqlite"]
+            
             data = collect_data()
             # Calculate relevant timeframe:
             analysis_interval = get_timestamp() - timedelta(minutes=run_config["analysis_specs"]["interval_minutes"])
