@@ -11,7 +11,6 @@ from measuring_assets.measuring import (
 from measuring_assets.utils.measuring_utils import format_timestamp, get_timestamp
 from utils import execute_sql_select, execute_sql_update, fetch_config
 
-
 # Set up logging # TODO consider removing
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -29,7 +28,7 @@ logger.addHandler(console_handler)
        
 
 
-def collect_data() -> dict:
+def collect_data(run_config: dict) -> dict:
     """Collects temperature data."""
     return measure_temp(run_config)
 
@@ -77,7 +76,7 @@ def main():
             run_config = fetch_config()
             db_cfg = run_config["sqlite"]
             
-            data = collect_data()
+            data = collect_data(run_config)
             # Calculate relevant timeframe:
             analysis_interval = get_timestamp() - timedelta(minutes=run_config["analysis_specs"]["interval_minutes"])
             formatted_interval = format_timestamp(analysis_interval)
