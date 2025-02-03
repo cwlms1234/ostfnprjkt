@@ -4,12 +4,17 @@ import yaml
 
 ### Config
 
+
 def fetch_config_file_path(filename: str) -> str:
     # Define the path to the YAML file
-    return os.path.join(os.path.join( os.path.dirname( __file__ ), '..' ), "config", filename)
+    return os.path.join(
+        os.path.join(os.path.dirname(__file__), ".."), "config", filename
+    )
 
 
-def fetch_config(name: str = "config.yaml") -> dict:  # TODO change to class? TODO Doscstring
+def fetch_config(
+    name: str = "config.yaml",
+) -> dict:  # TODO change to class? TODO Doscstring
     # # Get the current directory of the script
     # current_dir = os.path.dirname(__file__)
 
@@ -34,4 +39,3 @@ def write_config(cfg: dict) -> None:
 
 
 ### SQL
-

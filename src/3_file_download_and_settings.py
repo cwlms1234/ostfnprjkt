@@ -59,7 +59,9 @@ end_date = st.date_input(
 # Make sure single day queries return data
 if start_date == end_date:
     start_date = datetime.combine(start_date, time.min)
-    end_date = datetime.combine(end_date, time.max) # TODO use actual timestamp if this is set to current date
+    end_date = datetime.combine(
+        end_date, time.max
+    )  # TODO use actual timestamp if this is set to current date
 
 # Set up button row
 col1, col2, col3 = st.columns(spec=3)
@@ -83,41 +85,76 @@ with col3:
         data=st.session_state["download_df"].to_csv().encode("utf-8"),
         file_name=f"{start_date}_{end_date}.csv",
         mime="text/csv",
-        use_container_width=True
+        use_container_width=True,
     )
 
 if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)
 
-st.markdown('#')
+st.markdown("#")
 
 
 with st.expander(label="Adjust config:"):
-
     st.write("Measuring Parameters:")
 
-    col4, col5, col6 = st.columns([1,1,1])
+    col4, col5, col6 = st.columns([1, 1, 1])
     with col4:
-        update_frequency_minutes = st.number_input(label="Update interval (minutes)", step=0.5, value=float((st.session_state["config"]["execution_specs"]["update_frequency"])/60))
-        st.session_state["config"]["execution_specs"]["update_frequency"] = update_frequency_minutes*60
+        update_frequency_minutes = st.number_input(
+            label="Update interval (minutes)",
+            step=0.5,
+            value=float(
+                (st.session_state["config"]["execution_specs"]["update_frequency"]) / 60
+            ),
+        )
+        st.session_state["config"]["execution_specs"]["update_frequency"] = (
+            update_frequency_minutes * 60
+        )
 
     with col5:
-        min_threshold = st.number_input(label="Deactivation Threshold (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["deactivation_threshold"])
-        st.session_state["config"]["temperature_thresholds"]["deactivation_threshold"] = min_threshold
+        min_threshold = st.number_input(
+            label="Deactivation Threshold (°C)",
+            step=1,
+            value=st.session_state["config"]["temperature_thresholds"][
+                "deactivation_threshold"
+            ],
+        )
+        st.session_state["config"]["temperature_thresholds"][
+            "deactivation_threshold"
+        ] = min_threshold
 
     with col6:
-        max_threshold = st.number_input(label="Activation Threshold (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["activation_threshold"])
-        st.session_state["config"]["temperature_thresholds"]["activation_threshold"] = max_threshold
+        max_threshold = st.number_input(
+            label="Activation Threshold (°C)",
+            step=1,
+            value=st.session_state["config"]["temperature_thresholds"][
+                "activation_threshold"
+            ],
+        )
+        st.session_state["config"]["temperature_thresholds"]["activation_threshold"] = (
+            max_threshold
+        )
 
-    st.write("Monitoring Parameters:")  
+    st.write("Monitoring Parameters:")
 
-    col7, col8, col9 = st.columns([1,1,1])
+    col7, col8, col9 = st.columns([1, 1, 1])
     with col7:
-        warning_limit = st.number_input(label="Warning value (°C)", step=1, value = st.session_state["config"]["temperature_thresholds"]["warning_limit"])
-        st.session_state["config"]["temperature_thresholds"]["warning_limit"] = warning_limit
+        warning_limit = st.number_input(
+            label="Warning value (°C)",
+            step=1,
+            value=st.session_state["config"]["temperature_thresholds"]["warning_limit"],
+        )
+        st.session_state["config"]["temperature_thresholds"]["warning_limit"] = (
+            warning_limit
+        )
     with col8:
-        alert_limit = st.number_input(label="Alert value (°C)", step=1, value=st.session_state["config"]["temperature_thresholds"]["alert_limit"])
-        st.session_state["config"]["temperature_thresholds"]["alert_limit"] = alert_limit
+        alert_limit = st.number_input(
+            label="Alert value (°C)",
+            step=1,
+            value=st.session_state["config"]["temperature_thresholds"]["alert_limit"],
+        )
+        st.session_state["config"]["temperature_thresholds"]["alert_limit"] = (
+            alert_limit
+        )
     with col9:
         pass
 

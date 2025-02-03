@@ -12,7 +12,6 @@ from utils.sql_utils import execute_sql_to_df
 # produce_test_log(run_config)
 
 
-
 # Initialize the app's layout with placeholders
 st.title("Fan Control App")
 measure_metric_placeholder = st.empty()
@@ -66,18 +65,22 @@ max_col = st.session_state["config"]["sqlite"]["column_names"]["max"]
 # Main loop
 while True:
     # Fetch Data from the desired analysis window:
-    analysis_interval = get_timestamp() - timedelta(minutes=st.session_state["config"]["analysis_specs"]["interval_minutes"])
+    analysis_interval = get_timestamp() - timedelta(
+        minutes=st.session_state["config"]["analysis_specs"]["interval_minutes"]
+    )
     interval_datetime = format_timestamp(analysis_interval)
-    interval_df = execute_sql_to_df(db_name, f"SELECT * FROM {table_name} WHERE {timestamp_col} >= '{interval_datetime}'")
+    interval_df = execute_sql_to_df(
+        db_name,
+        f"SELECT * FROM {table_name} WHERE {timestamp_col} >= '{interval_datetime}'",
+    )
     interval_df.sort_values(by=timestamp_col, ascending=True, inplace=True)
-
 
     latest_row = interval_df.iloc[[-1]]
     latest_reading = interval_df[reading_col].iloc[[-1]].item()
     if len(interval_df) >= 2:
         previous_reading = interval_df[reading_col].iloc[[-2]].item()
         delta = latest_reading - previous_reading
-    else: 
+    else:
         delta = 0
 
     # Update placeholders
@@ -98,12 +101,9 @@ while True:
         label="Recent Max", value=f"{latest_row[max_col].item()}°"
     )
 
-    if len(interval_df) >5:
+    if len(interval_df) > 5:
         line_chart_placeholder.line_chart(
             data=interval_df, x=None, y=[mean_col, median_col, max_col]
         )  # TODO fetch from config
 
-    time.sleep(
-        6
-    )  # TODO time.sleep(run_config["execution_specs"]["update_frequency"])
-
+    time.sleep(6)  # TODO time.sleep(run_config["execution_specs"]["update_frequency"])

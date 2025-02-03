@@ -1,10 +1,8 @@
-
-
 from measuring_assets.test_prop import (
     fetch_humidity_test,
     fetch_temperature_measuring_test,
 )
-from measuring_assets.utils.measuring_utils import get_timestamp  #, write_to_file
+from measuring_assets.utils.measuring_utils import get_timestamp  # , write_to_file
 
 
 def measure_temp(config: dict) -> dict:
@@ -18,6 +16,7 @@ def measure_temp(config: dict) -> dict:
         config["sqlite"]["column_names"]["timestamp"]: timestamp,
         config["sqlite"]["column_names"]["reading"]: reading,
     }
+
 
 def measure_humidity() -> int:
     return fetch_humidity_test()

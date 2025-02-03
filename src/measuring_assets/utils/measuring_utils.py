@@ -1,8 +1,8 @@
-#import csv
-#import os
+# import csv
+# import os
 from datetime import datetime
 
-#import pandas as pd
+# import pandas as pd
 import pytz
 
 
@@ -11,6 +11,7 @@ def get_timestamp() -> datetime:
     berlin_tz = pytz.timezone("Europe/Berlin")
     timestamp = datetime.now(berlin_tz)
     return format_timestamp(timestamp)
+
 
 def format_timestamp(timestamp: datetime) -> datetime:
     """Return the current time in the Berlin time zone"""
@@ -26,6 +27,9 @@ def get_date():
     """Get the current year and month"""
     berlin_tz = pytz.timezone("Europe/Berlin")
     return datetime.now(berlin_tz).strftime("%m-%Y")
+
+
+# TODO shift to utils folder
 
 
 # def get_last_n_months_files(n): #TODO probably delete
