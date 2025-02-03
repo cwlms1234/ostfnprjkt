@@ -10,3 +10,5 @@ def fetch_temperature_measuring_test(test_dict: dict) -> int:
 
     return random.randrange(min_limit, max_limit, 1)
 
+def fetch_humidity_test() -> float:
+    return random.randrange(20, 95, 0.1)

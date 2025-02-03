@@ -1,24 +1,26 @@
 analysis_specs:
   interval_minutes: 5
 execution_specs:
-  update_interval: 60
+  update_frequency: 60
 sqlite:
   column_names:
+    dew_point: Dew_Point
+    humidity: Humidty
     max: Max
     mean: Mean
     median: Median
+    pressure: Pressure
     reading: Reading
     timestamp: Timestamp
-  db_name: test2.db
+  db_name: test3.db
   table_name: temp_readings
 status_messages:
   normal: asdf
 temperature_thresholds:
+  activation_threshold: 40
   alert_limit: 40
   corridor_size: 5
-  hysteresis_threshold: 5
-  lower_limit: 20
-  upper_limit: 80
+  deactivation_threshold: 20
   warning_limit: 35
 test_values:
   lower: 20

@@ -2,7 +2,7 @@ import hmac
 
 import streamlit as st
 
-from utils import fetch_config
+from utils.general_utils import fetch_config
 
 
 # Set up loading Page, credentials are stored in ~/.streamlit/secrets.toml

@@ -1,15 +1,27 @@
 import json
 import logging
-import statistics
 import subprocess
+import sys
 import time
 from datetime import timedelta
+
+import pandas as pd
 
 from measuring_assets.measuring import (
     measure_temp,
 )
 from measuring_assets.utils.measuring_utils import format_timestamp, get_timestamp
-from utils import execute_sql_select, execute_sql_update, fetch_config
+from utils.backend_utils import (
+    calculate_interval_stats,
+    toggle_pump,
+    unpack_query_result,
+)
+from utils.general_utils import fetch_config
+from utils.sql_utils import (
+    execute_df_to_sql,
+    execute_sql_select,
+    execute_sql_update,
+)
 
 # Set up logging # TODO consider removing
 logger = logging.getLogger()
@@ -25,12 +37,6 @@ console_handler.setFormatter(formatter)
 
 # Add the handler to the logger
 logger.addHandler(console_handler)
-       
-
-
-# def collect_data(run_config: dict) -> dict: # TODO probably remove
-#     """Collects temperature data."""
-#     return measure_temp(run_config)
 
 def insert_data(db_name, table_name, data) -> None:
     """Inserts data into SQL table."""
@@ -53,7 +59,10 @@ def main():
         {db_cfg["column_names"]["reading"]} FLOAT,
         {db_cfg["column_names"]["mean"]} FLOAT,
         {db_cfg["column_names"]["median"]} FLOAT,
-        {db_cfg["column_names"]["max"]} FLOAT
+        {db_cfg["column_names"]["max"]} FLOAT,
+        {db_cfg["column_names"]["humidity"]} FLOAT,
+        {db_cfg["column_names"]["dew_point"]} FLOAT,
+        {db_cfg["column_names"]["pressure"]} FLOAT
     )
     """
 
@@ -77,6 +86,8 @@ def main():
             db_cfg = run_config["sqlite"]
             
             data = measure_temp(run_config)
+
+            
             # Calculate relevant timeframe:
             analysis_interval = get_timestamp() - timedelta(minutes=run_config["analysis_specs"]["interval_minutes"])
             formatted_interval = format_timestamp(analysis_interval)
@@ -87,27 +98,23 @@ def main():
             FROM {db_cfg["table_name"]}
             WHERE {db_cfg["column_names"]["timestamp"]} >= '{formatted_interval}'
             """
-            interval_temps = execute_sql_select(db_cfg["db_name"], interval_temp_query)
-            
-            # Statistics need at least one data point
-            if interval_temps:
-                # Convert list of 1 element tuples into flat list:
-                interval_temps = [row[0] for row in interval_temps]
-                print(f"interval_temps = {interval_temps}") # TODO remove
-                mean_temp = statistics.mean(interval_temps)
-                mean_temp = round(mean_temp, 1)
-                median_temp = statistics.median(interval_temps)
-                max_temp = max(interval_temps)
-                data += (mean_temp, median_temp, max_temp)
+            interval_temp_query_result = execute_sql_select(db_cfg["db_name"], interval_temp_query)
+            if interval_temp_query_result:
+                measurements_list = unpack_query_result(interval_temp_query_result)
             else:
-                data += (data[1], data[1], data[1])
+                measurements_list = [data[db_cfg["column_names"]["reading"]]]
+            data.update(calculate_interval_stats(run_config, measurements_list))
+
+
+            toggle_pump(run_config, data)
 
             print(f"data = {data}") #TODO remove
 
-            insert_data(db_cfg["db_name"], db_cfg["table_name"], data)
+            data_df = pd.DataFrame([data])
+            execute_df_to_sql(db_cfg, data_df)
             time.sleep(5) # get from config
     except Exception as e:
-        logger.error(f"Error occurred: {e}")
+        logger.error(f"Error occurred: {e} \n\n\n Traceback: {sys.exception().__traceback__}")
     finally:
         # Cleanup
         pass

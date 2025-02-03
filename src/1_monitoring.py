@@ -7,7 +7,7 @@ from measuring_assets.utils.measuring_utils import (
     format_timestamp,
     get_timestamp,
 )
-from utils import execute_sql_to_df
+from utils.sql_utils import execute_sql_to_df
 
 # produce_test_log(run_config)
 
@@ -74,8 +74,11 @@ while True:
 
     latest_row = interval_df.iloc[[-1]]
     latest_reading = interval_df[reading_col].iloc[[-1]].item()
-    previous_reading = interval_df[reading_col].iloc[[-2]].item()
-    delta = latest_reading - previous_reading
+    if len(interval_df) >= 2:
+        previous_reading = interval_df[reading_col].iloc[[-2]].item()
+        delta = latest_reading - previous_reading
+    else: 
+        delta = 0
 
     # Update placeholders
     measure_metric_placeholder.metric(
@@ -102,5 +105,5 @@ while True:
 
     time.sleep(
         6
-    )  # TODO time.sleep(run_config["execution_specs"]["update_interval"])
+    )  # TODO time.sleep(run_config["execution_specs"]["update_frequency"])
 

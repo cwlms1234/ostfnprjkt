@@ -3,7 +3,8 @@ from datetime import datetime, time
 import pandas as pd
 import streamlit as st
 
-from utils import execute_sql_select, execute_sql_to_df, fetch_config, write_config
+from utils.general_utils import fetch_config, write_config
+from utils.sql_utils import execute_sql_select, execute_sql_to_df
 
 if "download_df" not in st.session_state:
     st.session_state["download_df"] = pd.DataFrame()
@@ -97,16 +98,16 @@ with st.expander(label="Adjust config:"):
 
     col4, col5, col6 = st.columns([1,1,1])
     with col4:
-        update_interval_minutes = st.number_input(label="Update interval (minutes)", step=0.5, value=float((st.session_state["config"]["execution_specs"]["update_interval"])/60))
-        st.session_state["config"]["execution_specs"]["update_interval"] = update_interval_minutes*60
+        update_frequency_minutes = st.number_input(label="Update interval (minutes)", step=0.5, value=float((st.session_state["config"]["execution_specs"]["update_frequency"])/60))
+        st.session_state["config"]["execution_specs"]["update_frequency"] = update_frequency_minutes*60
 
     with col5:
-        min_threshold = st.number_input(label="Min value (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["lower_limit"])
-        st.session_state["config"]["temperature_thresholds"]["lower_limit"] = min_threshold
+        min_threshold = st.number_input(label="Deactivation Threshold (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["deactivation_threshold"])
+        st.session_state["config"]["temperature_thresholds"]["deactivation_threshold"] = min_threshold
 
     with col6:
-        max_threshold = st.number_input(label="Max_value (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["upper_limit"])
-        st.session_state["config"]["temperature_thresholds"]["upper_limit"] = max_threshold
+        max_threshold = st.number_input(label="Activation Threshold (°C)",step=1, value=st.session_state["config"]["temperature_thresholds"]["activation_threshold"])
+        st.session_state["config"]["temperature_thresholds"]["activation_threshold"] = max_threshold
 
     st.write("Monitoring Parameters:")  
 
@@ -118,9 +119,7 @@ with st.expander(label="Adjust config:"):
         alert_limit = st.number_input(label="Alert value (°C)", step=1, value=st.session_state["config"]["temperature_thresholds"]["alert_limit"])
         st.session_state["config"]["temperature_thresholds"]["alert_limit"] = alert_limit
     with col9:
-        hysteresis_threshold = st.number_input(label="Hysteresis threshold (°C)", step=1, value=st.session_state["config"]["temperature_thresholds"]["hysteresis_threshold"])
-        st.session_state["config"]["temperature_thresholds"]["hysteresis_threshold"] = hysteresis_threshold
-
+        pass
 
     col10, col11 = st.columns(2)
     with col10:
