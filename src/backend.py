@@ -28,9 +28,9 @@ logger.addHandler(console_handler)
        
 
 
-def collect_data(run_config: dict) -> dict:
-    """Collects temperature data."""
-    return measure_temp(run_config)
+# def collect_data(run_config: dict) -> dict: # TODO probably remove
+#     """Collects temperature data."""
+#     return measure_temp(run_config)
 
 def insert_data(db_name, table_name, data) -> None:
     """Inserts data into SQL table."""
@@ -76,7 +76,7 @@ def main():
             run_config = fetch_config()
             db_cfg = run_config["sqlite"]
             
-            data = collect_data(run_config)
+            data = measure_temp(run_config)
             # Calculate relevant timeframe:
             analysis_interval = get_timestamp() - timedelta(minutes=run_config["analysis_specs"]["interval_minutes"])
             formatted_interval = format_timestamp(analysis_interval)
