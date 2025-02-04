@@ -54,7 +54,7 @@ db_config = st.session_state["config"]["db"]
 db_name = st.session_state["config"]["db"]["db_name"]
 table_name = st.session_state["config"]["db"]["table_name"]
 timestamp_col = st.session_state["config"]["db"]["column_names"]["timestamp"]
-reading_col = st.session_state["config"]["db"]["column_names"]["temperature"]
+temp_col = st.session_state["config"]["db"]["column_names"]["temperature"]
 median_col = st.session_state["config"]["db"]["column_names"]["median"]
 mean_col = st.session_state["config"]["db"]["column_names"]["mean"]
 max_col = st.session_state["config"]["db"]["column_names"]["max"]
@@ -73,9 +73,9 @@ while True:
     interval_df.sort_values(by=timestamp_col, ascending=True, inplace=True)
 
     latest_row = interval_df.iloc[[-1]]
-    latest_reading = interval_df[reading_col].iloc[[-1]].item()
+    latest_reading = interval_df[temp_col].iloc[[-1]].item()
     if len(interval_df) >= 2:
-        previous_reading = interval_df[reading_col].iloc[[-2]].item()
+        previous_reading = interval_df[temp_col].iloc[[-2]].item()
         delta = latest_reading - previous_reading
     else:
         delta = 0
@@ -99,8 +99,9 @@ while True:
     )
 
     if len(interval_df) > 5:
+        interval_df["activation_threshold"] = st.session_state["config"]["temperature_thresholds"]["activation_threshold"]
         line_chart_placeholder.line_chart(
-            data=interval_df, x=None, y=[mean_col, median_col, max_col]
+            data=interval_df, x=None, y=[temp_col, "activation_threshold"]
         )  # TODO fetch from config
 
     time.sleep(6)  # TODO time.sleep(run_config["execution_specs"]["update_frequency"])
