@@ -1,5 +1,7 @@
 import os
+from datetime import datetime
 
+import pytz
 import yaml
 
 ### Config
@@ -38,4 +40,25 @@ def write_config(cfg: dict) -> None:
         yaml.dump(cfg, file)
 
 
-### SQL
+### Time
+def get_timestamp() -> datetime:
+    """Get the current time in the Berlin time zone"""
+    berlin_tz = pytz.timezone("Europe/Berlin")
+    timestamp = datetime.now(berlin_tz)
+    return format_timestamp(timestamp)
+
+
+def format_timestamp(timestamp: datetime) -> datetime:
+    """Return the current time in the Berlin time zone"""
+    return timestamp.replace(
+        hour=timestamp.hour,
+        minute=timestamp.minute,
+        second=timestamp.second,
+        microsecond=0,
+    )
+
+
+def get_date():
+    """Get the current year and month"""
+    berlin_tz = pytz.timezone("Europe/Berlin")
+    return datetime.now(berlin_tz).strftime("%m-%Y")

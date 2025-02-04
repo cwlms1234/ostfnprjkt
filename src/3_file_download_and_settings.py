@@ -13,14 +13,14 @@ preview_df = False
 st.session_state["config"] = fetch_config()
 
 # Create more human readable variable names for config:
-db_config = st.session_state["config"]["sqlite"]
-db_name = st.session_state["config"]["sqlite"]["db_name"]
-table_name = st.session_state["config"]["sqlite"]["table_name"]
-timestamp_col = st.session_state["config"]["sqlite"]["column_names"]["timestamp"]
-reading_col = st.session_state["config"]["sqlite"]["column_names"]["reading"]
-median_col = st.session_state["config"]["sqlite"]["column_names"]["median"]
-mean_col = st.session_state["config"]["sqlite"]["column_names"]["mean"]
-max_col = st.session_state["config"]["sqlite"]["column_names"]["max"]
+db_config = st.session_state["config"]["db"]
+db_name = st.session_state["config"]["db"]["db_name"]
+table_name = st.session_state["config"]["db"]["table_name"]
+timestamp_col = st.session_state["config"]["db"]["column_names"]["timestamp"]
+reading_col = st.session_state["config"]["db"]["column_names"]["temperature"]
+median_col = st.session_state["config"]["db"]["column_names"]["median"]
+mean_col = st.session_state["config"]["db"]["column_names"]["mean"]
+max_col = st.session_state["config"]["db"]["column_names"]["max"]
 
 # Fetch timestamp boundaries for selection boxes
 query_oldest = f"""SELECT {timestamp_col} 

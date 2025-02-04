@@ -3,10 +3,7 @@ from datetime import timedelta
 
 import streamlit as st
 
-from measuring_assets.utils.measuring_utils import (
-    format_timestamp,
-    get_timestamp,
-)
+from utils.general_utils import format_timestamp, get_timestamp
 from utils.sql_utils import execute_sql_to_df
 
 # produce_test_log(run_config)
@@ -53,14 +50,14 @@ cooling_placeholder_four.metric(label="cooling_placeholder", value=None)
 
 
 # Create more human readable variable names for config:
-db_config = st.session_state["config"]["sqlite"]
-db_name = st.session_state["config"]["sqlite"]["db_name"]
-table_name = st.session_state["config"]["sqlite"]["table_name"]
-timestamp_col = st.session_state["config"]["sqlite"]["column_names"]["timestamp"]
-reading_col = st.session_state["config"]["sqlite"]["column_names"]["reading"]
-median_col = st.session_state["config"]["sqlite"]["column_names"]["median"]
-mean_col = st.session_state["config"]["sqlite"]["column_names"]["mean"]
-max_col = st.session_state["config"]["sqlite"]["column_names"]["max"]
+db_config = st.session_state["config"]["db"]
+db_name = st.session_state["config"]["db"]["db_name"]
+table_name = st.session_state["config"]["db"]["table_name"]
+timestamp_col = st.session_state["config"]["db"]["column_names"]["timestamp"]
+reading_col = st.session_state["config"]["db"]["column_names"]["temperature"]
+median_col = st.session_state["config"]["db"]["column_names"]["median"]
+mean_col = st.session_state["config"]["db"]["column_names"]["mean"]
+max_col = st.session_state["config"]["db"]["column_names"]["max"]
 
 # Main loop
 while True:

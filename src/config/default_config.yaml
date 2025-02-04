@@ -25,12 +25,13 @@ execution_specs:
 analysis_specs:
     interval_minutes: !!int 5 # in minutes
 
-sqlite:
-    db_name: !!str "test3.db"
+db:
+    db_name: !!str "test4.db"
     table_name: !!str "temp_readings"
+    round_decimal: !!int 1
     column_names:
         timestamp: !!str "Timestamp"
-        reading: !!str "Reading"
+        temperature: !!str "Temperature"
         mean: !!str "Mean"
         median: !!str "Median"
         max: !!str "Max"

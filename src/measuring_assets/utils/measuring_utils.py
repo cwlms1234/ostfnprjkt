@@ -1,32 +1,30 @@
 # import csv
 # import os
-from datetime import datetime
 
 # import pandas as pd
-import pytz
 
 
-def get_timestamp() -> datetime:
-    """Get the current time in the Berlin time zone"""
-    berlin_tz = pytz.timezone("Europe/Berlin")
-    timestamp = datetime.now(berlin_tz)
-    return format_timestamp(timestamp)
+# def get_timestamp() -> datetime:
+#     """Get the current time in the Berlin time zone"""
+#     berlin_tz = pytz.timezone("Europe/Berlin")
+#     timestamp = datetime.now(berlin_tz)
+#     return format_timestamp(timestamp)
 
 
-def format_timestamp(timestamp: datetime) -> datetime:
-    """Return the current time in the Berlin time zone"""
-    return timestamp.replace(
-        hour=timestamp.hour,
-        minute=timestamp.minute,
-        second=timestamp.second,
-        microsecond=0,
-    )
+# def format_timestamp(timestamp: datetime) -> datetime:
+#     """Return the current time in the Berlin time zone"""
+#     return timestamp.replace(
+#         hour=timestamp.hour,
+#         minute=timestamp.minute,
+#         second=timestamp.second,
+#         microsecond=0,
+#     )
 
 
-def get_date():
-    """Get the current year and month"""
-    berlin_tz = pytz.timezone("Europe/Berlin")
-    return datetime.now(berlin_tz).strftime("%m-%Y")
+# def get_date():
+#     """Get the current year and month"""
+#     berlin_tz = pytz.timezone("Europe/Berlin")
+#     return datetime.now(berlin_tz).strftime("%m-%Y")
 
 
 # TODO shift to utils folder
@@ -76,7 +74,7 @@ def get_date():
 #         # Determine whether the file already exists:
 #         if not file.tell():
 #             writer.writerow(
-#                 (config["csv_headers"]["timestamp"], config["csv_headers"]["reading"])
+#                 (config["csv_headers"]["timestamp"], config["csv_headers"]["temperature"])
 #             )
 #         else:
 #             pass

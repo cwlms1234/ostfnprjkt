@@ -13,8 +13,8 @@ def measure_temp(config: dict) -> dict:
     )  # TODO consider removing
 
     return {
-        config["sqlite"]["column_names"]["timestamp"]: timestamp,
-        config["sqlite"]["column_names"]["reading"]: reading,
+        config["db"]["column_names"]["timestamp"]: timestamp,
+        config["db"]["column_names"]["temperature"]: reading,
     }
 
 
@@ -46,7 +46,7 @@ def measure_humidity() -> int:
 
 # def append_df_with_new_data(df: pd.DataFrame, measurement: tuple, config: dict) -> pd.DataFrame: # TODO probably remove
 #     new_row = pd.DataFrame(
-#         {config["csv_headers"]["reading"]: measurement[1]}, index=[measurement[0]]
+#         {config["csv_headers"]["temperature"]: measurement[1]}, index=[measurement[0]]
 #     )
 
 #     return pd.concat([df, new_row])

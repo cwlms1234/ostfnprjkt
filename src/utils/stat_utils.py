@@ -1,9 +1,9 @@
 import math
 
 
-def calculate_dew_point(temperature: float, humidity: float) -> float:
+def calculate_dew_point(db_cfg: dict, temperature: float, humidity: float) -> float:
     vpd = calculate_vapour_pressure_deficit(temperature, humidity)
-    return 240.7 * vpd / (7.6- vpd)
+    return round((240.7 * vpd / (7.6 - vpd)), db_cfg["round_decimal"])
 
 
 def calculate_vapour_pressure_deficit(temperature: float, humidity: float) -> float:
