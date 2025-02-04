@@ -81,7 +81,7 @@ with col2:
 
 with col3:
     st.download_button(
-        label="Download as CSV", #TODO round filename if 1 day interval
+        label="Download as CSV",  # TODO round filename if 1 day interval
         data=st.session_state["download_df"].to_csv().encode("utf-8"),
         file_name=f"{start_date}_{end_date}.csv",
         mime="text/csv",

@@ -14,6 +14,10 @@ def fetch_config_file_path(filename: str) -> str:
     )
 
 
+def fetch_src_file_path(filename: str) -> str:
+    return os.path.join(os.path.join(os.path.dirname(__file__), ".."), filename)
+
+
 def fetch_config(
     name: str = "config.yaml",
 ) -> dict:  # TODO change to class? TODO Doscstring

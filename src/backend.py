@@ -12,7 +12,12 @@ from utils.backend_utils import (
     toggle_pump,
     unpack_query_result,
 )
-from utils.general_utils import fetch_config, format_timestamp, get_timestamp
+from utils.general_utils import (
+    fetch_config,
+    fetch_src_file_path,
+    format_timestamp,
+    get_timestamp,
+)
 from utils.measurering_utils import (
     get_current_humidity,
     get_current_pressure,
@@ -78,7 +83,7 @@ def main():
     time.sleep(2)
 
     # Start the Streamlit app
-    subprocess.Popen(["streamlit", "run", "src/frontend.py"])
+    subprocess.Popen(["streamlit", "run", f"{fetch_src_file_path("frontend.py")}"])
 
     try:
         while True:

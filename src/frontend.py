@@ -2,7 +2,7 @@ import hmac
 
 import streamlit as st
 
-from utils.general_utils import fetch_config
+from utils.general_utils import fetch_config, fetch_src_file_path
 
 
 # Set up loading Page, credentials are stored in ~/.streamlit/secrets.toml
@@ -50,9 +50,9 @@ if "config" not in st.session_state:
     st.session_state["config"] = fetch_config()
 pg = st.navigation(
     [
-        st.Page("1_monitoring.py"),
-        st.Page("2_stats.py"),
-        st.Page("3_file_download_and_settings.py"),
+        st.Page(fetch_src_file_path("1_monitoring.py")),
+        st.Page(fetch_src_file_path("2_stats.py")),
+        st.Page(fetch_src_file_path("3_file_download_and_settings.py")),
     ]
 )
 pg.run()
