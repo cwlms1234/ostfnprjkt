@@ -50,9 +50,9 @@ if "config" not in st.session_state:
     st.session_state["config"] = fetch_config()
 pg = st.navigation(
     [
-        st.Page(fetch_src_file_path("1_monitoring.py")),
-        st.Page(fetch_src_file_path("2_stats.py")),
-        st.Page(fetch_src_file_path("3_file_download_and_settings.py")),
+        st.Page(fetch_src_file_path("web_pages/1_monitoring.py")),
+        st.Page(fetch_src_file_path("web_pages/2_stats.py")),
+        st.Page(fetch_src_file_path("web_pages/3_file_download_and_settings.py")),
     ]
 )
 pg.run()

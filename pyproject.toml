@@ -39,7 +39,7 @@ where= ["src"]
 
 [tool.setuptools.package-data]
 # Include arbitrary files in package.
-"*" = ["*.yaml", "*.txt"]
+"*" = ["*.yaml", "*.txt", "*.py"]
 
 
 [project.scripts]
