@@ -6,7 +6,6 @@ import time
 from datetime import timedelta
 
 import pandas as pd
-
 from utils.backend_utils import (
     calculate_interval_stats,
     toggle_pump,

@@ -2,7 +2,6 @@ import time
 from datetime import timedelta
 
 import streamlit as st
-
 from utils.general_utils import format_timestamp, get_timestamp
 from utils.sql_utils import execute_sql_to_df
 
@@ -99,7 +98,9 @@ while True:
     )
 
     if len(interval_df) > 5:
-        interval_df["activation_threshold"] = st.session_state["config"]["temperature_thresholds"]["activation_threshold"]
+        interval_df["activation_threshold"] = st.session_state["config"][
+            "temperature_thresholds"
+        ]["activation_threshold"]
         line_chart_placeholder.line_chart(
             data=interval_df, x=None, y=[temp_col, "activation_threshold"]
         )  # TODO fetch from config

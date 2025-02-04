@@ -2,7 +2,6 @@ from datetime import datetime, time
 
 import pandas as pd
 import streamlit as st
-
 from utils.general_utils import fetch_config, write_config
 from utils.sql_utils import execute_sql_select, execute_sql_to_df
 

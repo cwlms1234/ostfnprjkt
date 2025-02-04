@@ -1,7 +1,6 @@
 import hmac
 
 import streamlit as st
-
 from utils.general_utils import fetch_config, fetch_src_file_path
 
 
@@ -50,9 +49,9 @@ if "config" not in st.session_state:
     st.session_state["config"] = fetch_config()
 pg = st.navigation(
     [
-        st.Page(fetch_src_file_path("web_pages/1_monitoring.py")),
-        st.Page(fetch_src_file_path("web_pages/2_stats.py")),
-        st.Page(fetch_src_file_path("web_pages/3_file_download_and_settings.py")),
+        st.Page(fetch_src_file_path("web_pages/1_Monitoring.py")),
+        st.Page(fetch_src_file_path("web_pages/2_Stats.py")),
+        st.Page(fetch_src_file_path("web_pages/3_File_Download_And_Settings.py")),
     ]
 )
 pg.run()
