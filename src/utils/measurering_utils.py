@@ -15,7 +15,7 @@ def get_current_humidity():
 
 
 def get_current_pressure():
-    pass  # *10 hpa
+    return fetch_humidity_test()  # *10 hpa
 
 
 def get_current_temperature(config: dict) -> float:

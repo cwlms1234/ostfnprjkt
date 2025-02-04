@@ -98,6 +98,7 @@ while True:
         label="Recent Max", value=f"{latest_row[max_col].item()}°"
     )
 
+    print(f"\n\n\n\n\n {interval_df} \n\n\n\n\n")
     if len(interval_df) > 5:
         line_chart_placeholder.line_chart(
             data=interval_df, x=None, y=[mean_col, median_col, max_col]

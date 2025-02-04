@@ -26,7 +26,7 @@ analysis_specs:
     interval_minutes: !!int 5 # in minutes
 
 db:
-    db_name: !!str "test4.db"
+    db_name: !!str "test5.db"
     table_name: !!str "temp_readings"
     round_decimal: !!int 1
     column_names:
