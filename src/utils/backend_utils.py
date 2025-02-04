@@ -6,7 +6,7 @@ def unpack_query_result(query_result: list[tuple]) -> list:
 
 
 def calculate_interval_stats(config: dict, interval_temps: list) -> dict:
-    """Takes a list of recent measurements and returns a tuple of statistical metrics based on that list"""
+    """Takes a list of recent measurements and returns a dict of statistical metrics based on that list"""
     print(f"interval_temps = {interval_temps}")  # TODO remove
     mean_temp = statistics.mean(interval_temps)
     mean_temp = round(mean_temp, 1)

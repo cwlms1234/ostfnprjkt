@@ -17,6 +17,7 @@ from utils.backend_utils import (
     unpack_query_result,
 )
 from utils.general_utils import fetch_config
+from utils.measurering_utils import get_current_humidity, get_current_pressure
 from utils.sql_utils import (
     execute_df_to_sql,
     execute_sql_select,
@@ -106,6 +107,10 @@ def main():
                 measurements_list = [data[db_cfg["column_names"]["reading"]]]
             data.update(calculate_interval_stats(run_config, measurements_list))
 
+            pressure = get_current_pressure()
+            humidity = get_current_humidity()
+
+            
             toggle_pump(run_config, data)
 
             print(f"data = {data}")  # TODO remove
