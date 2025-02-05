@@ -50,7 +50,7 @@ def insert_data(db_name, table_name, data) -> None:
     # logger.info(f"*** INSERT INTO {db_name} VALUES {data}") # TODO remove
     execute_sql_update(
         db_name,
-        f"INSERT INTO {table_name} VALUES ('{data[0]}', {", ".join(map(str, data[1:]))})",
+        f"INSERT INTO {table_name} VALUES ('{data[0]}', {', '.join(map(str, data[1:]))})",
     )
 
 
@@ -82,7 +82,7 @@ def main():
     time.sleep(2)
 
     # Start the Streamlit app
-    subprocess.Popen(["streamlit", "run", f"{fetch_src_file_path("frontend.py")}"])
+    subprocess.Popen(["streamlit", "run", f"{fetch_src_file_path('frontend.py')}"])
 
     try:
         while True:

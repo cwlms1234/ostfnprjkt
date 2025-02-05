@@ -24,11 +24,11 @@ def toggle_pump(cfg: dict, data: dict) -> None:
     reading_col = cfg["db"]["column_names"]["temperature"]
     if data[reading_col] >= cfg["temperature_thresholds"]["activation_threshold"]:
         print(
-            f"*** Measured {data[reading_col]} >= {cfg["temperature_thresholds"]["activation_threshold"]} \n Powering pump"
+            f"*** Measured {data[reading_col]} >= {cfg['temperature_thresholds']['activation_threshold']} \n Powering pump"
         )
     elif data[reading_col] <= cfg["temperature_thresholds"]["activation_threshold"]:
         print(
-            f"*** Measured {data[reading_col]} >= {cfg["temperature_thresholds"]["deactivation_threshold"]} \n Shutting down pump"
+            f"*** Measured {data[reading_col]} >= {cfg['temperature_thresholds']['deactivation_threshold']} \n Shutting down pump"
         )
     else:
         pass

@@ -10,7 +10,7 @@ db:
     pressure: Pressure
     temperature: Temperature
     timestamp: Timestamp
-  db_name: test5.db
+  db_name: test6.db
   round_decimal: 1
   table_name: temp_readings
 execution_specs:

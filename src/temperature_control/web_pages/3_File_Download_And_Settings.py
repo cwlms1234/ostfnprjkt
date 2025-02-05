@@ -72,7 +72,7 @@ with col1:
                     WHERE {timestamp_col} >= '{start_date}' 
                     AND {timestamp_col} <= '{end_date}'"""
         st.session_state["download_df"] = execute_sql_to_df(db_name, query)
-        st.success(f"Query fechted {len(st.session_state["download_df"])} lines!")
+        st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
 with col2:
     if st.button(label="Preview Data", use_container_width=True):
