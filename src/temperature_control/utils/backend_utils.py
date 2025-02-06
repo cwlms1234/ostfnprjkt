@@ -19,16 +19,19 @@ def calculate_interval_stats(db_cfg: dict, interval_temps: list) -> dict:
     }
 
 
-def toggle_pump(cfg: dict, data: dict) -> None:
+def toggle_pump(cfg: dict, data: dict, previous_run: dict | None) -> dict:
     """Compare the current temperature to the activation / deactivation threshold and toggle the pump accordingly"""
-    reading_col = cfg["db"]["column_names"]["temperature"]
-    if data[reading_col] >= cfg["temperature_thresholds"]["activation_threshold"]:
-        print(
-            f"*** Measured {data[reading_col]} >= {cfg['temperature_thresholds']['activation_threshold']} \n Powering pump"
-        )
-    elif data[reading_col] <= cfg["temperature_thresholds"]["activation_threshold"]:
-        print(
-            f"*** Measured {data[reading_col]} >= {cfg['temperature_thresholds']['deactivation_threshold']} \n Shutting down pump"
-        )
+    columns = cfg["db"]["column_names"]
+    if (
+        data[columns["temperature"]]
+        >= cfg["temperature_thresholds"]["activation_threshold"]
+    ) or (
+        data[columns["temperature"]]
+        >= cfg["temperature_thresholds"]["deactivation_threshold"]
+        and isinstance(previous_run, dict)
+        and previous_run[columns["pump_activation"]]
+        > 0  # TODO refactor to be more concise
+    ):
+        return {columns["pump_activation"]: cfg["execution_specs"]["update_frequency"]}
     else:
-        pass
+        return {columns["pump_activation"]: 0}

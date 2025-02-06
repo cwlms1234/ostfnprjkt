@@ -60,18 +60,22 @@ def main():
     db_cfg = run_config["db"]
     column_names = db_cfg["column_names"]
     logger.info(f"\nLoaded Config:\n{json.dumps(run_config, indent=4)}\n")
+    pump_status = None
 
     # Create Table
     create_statement = f"""
     CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} (
-        {column_names["timestamp"]} DATETIME,
-        {column_names["temperature"]} FLOAT,
-        {column_names["mean"]} FLOAT,
-        {column_names["median"]} FLOAT,
-        {column_names["max"]} FLOAT,
-        {column_names["humidity"]} FLOAT,
-        {column_names["dew_point"]} FLOAT,
-        {column_names["pressure"]} FLOAT
+        '{column_names["timestamp"]}' DATETIME,
+        '{column_names["temperature"]}' FLOAT,
+        '{column_names["mean"]}' FLOAT,
+        '{column_names["median"]}' FLOAT,
+        '{column_names["max"]}' FLOAT,
+        '{column_names["humidity"]}' FLOAT,
+        '{column_names["dew_point"]}' FLOAT,
+        '{column_names["pressure"]}' FLOAT,
+        '{column_names["weekday"]}' STRING,
+        '{column_names["hour_interval"]}' INTEGER,
+        '{column_names["pump_activation"]}' INTEGER
     )
     """
 
@@ -127,7 +131,8 @@ def main():
                 measurements_list = [data[column_names["temperature"]]]
             data.update(calculate_interval_stats(db_cfg, measurements_list))
 
-            toggle_pump(run_config, data)
+            pump_status = toggle_pump(run_config, data, pump_status)
+            data.update(pump_status)
 
             print(f"data = {data}")  # TODO remove
 

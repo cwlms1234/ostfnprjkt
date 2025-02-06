@@ -1,6 +1,7 @@
 from datetime import datetime, time
 
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 from utils.general_utils import fetch_config, write_config
 from utils.sql_utils import execute_sql_select, execute_sql_to_df
@@ -16,7 +17,7 @@ db_config = st.session_state["config"]["db"]
 db_name = st.session_state["config"]["db"]["db_name"]
 table_name = st.session_state["config"]["db"]["table_name"]
 timestamp_col = st.session_state["config"]["db"]["column_names"]["timestamp"]
-reading_col = st.session_state["config"]["db"]["column_names"]["temperature"]
+temp_col = st.session_state["config"]["db"]["column_names"]["temperature"]
 median_col = st.session_state["config"]["db"]["column_names"]["median"]
 mean_col = st.session_state["config"]["db"]["column_names"]["mean"]
 max_col = st.session_state["config"]["db"]["column_names"]["max"]
@@ -55,6 +56,16 @@ end_date = st.date_input(
     max_value=newest_timestamp,
 )
 
+# TODO select weekday and maybe hour:
+# values = range(5)
+# labels = ['first','second','third','fourth','fifth']
+
+# selection = st.select_slider('Choose a range',values,value=(1,3), format_func=(lambda x:labels[x]))
+
+# st.write(f'The selection is {selection} with values having type {type(selection[0])}.')
+
+###
+
 # Make sure single day queries return data
 if start_date == end_date:
     start_date = datetime.combine(start_date, time.min)
@@ -65,7 +76,7 @@ if start_date == end_date:
 # Set up button row
 col1, col2, col3 = st.columns(spec=3)
 
-with col1:
+with col1:  # TODO adjust select to be more specific than *
     if st.button(label="Execute Search", use_container_width=True):
         query = f"""SELECT * 
                     FROM {table_name} 
@@ -169,3 +180,105 @@ with st.expander(label="Adjust config:"):
 # TODO make layout prettier
 # TODO add value parameter based on config to number input
 # TODO read config on every loop in data_collector
+
+if "download_df" in st.session_state and len(st.session_state["download_df"]) > 1:
+    # st.session_state["download_df"][timestamp_col] = pd.to_datetime(st.session_state["download_df"][timestamp_col])
+
+    # # Extract weekday and time
+    # st.session_state["download_df"]['weekday'] = st.session_state["download_df"][timestamp_col].dt.day_name()
+    # st.session_state["download_df"]['time'] = st.session_state["download_df"][timestamp_col].dt.strftime('%H:%M')
+
+    # # Pivot data to create a matrix for the heatmap
+    # heatmap_data = st.session_state["download_df"].pivot_table(index='time', columns='weekday', values=temp_col, aggfunc='mean')
+
+    # # Plot the heatmap
+    # fig = px.imshow(heatmap_data,
+    #                 labels={'x': 'Weekday', 'y': 'Time', 'color': temp_col},
+    #                 color_continuous_scale='Viridis',  # Adjust color scale if needed
+    #                 title='Temperature Heatmap by Weekday and Time')
+
+    # fig.update_xaxes(side='top')  # Optional: To put weekday labels on top
+    # st.plotly_chart(figure_or_data=fig)
+
+    # Ensure 'timestamp_col' is in datetime format
+    st.session_state["download_df"][timestamp_col] = pd.to_datetime(
+        st.session_state["download_df"][timestamp_col]
+    )
+
+    # Extract weekday and round time to the nearest 30 minutes
+    st.session_state["download_df"]["weekday"] = st.session_state["download_df"][
+        timestamp_col
+    ].dt.day_name()
+
+    # Round the time to the nearest 30 minutes
+    st.session_state["download_df"]["time"] = (
+        st.session_state["download_df"][timestamp_col]
+        .dt.floor("30min")
+        .dt.strftime("%H:%M")
+    )
+
+    # Filter times between 07:00 and 20:00
+    time_filter = (st.session_state["download_df"]["time"] >= "07:00") & (
+        st.session_state["download_df"]["time"] <= "20:00"
+    )
+    st.session_state["download_df"] = st.session_state["download_df"][time_filter]
+
+    # Fix weekday ordering
+    weekdays_order = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    st.session_state["download_df"]["weekday"] = pd.Categorical(
+        st.session_state["download_df"]["weekday"],
+        categories=weekdays_order,
+        ordered=True,
+    )
+
+    # Ensure time is sorted in chronological order
+    st.session_state["download_df"]["time"] = pd.to_datetime(
+        st.session_state["download_df"]["time"], format="%H:%M"
+    ).dt.strftime("%H:%M")
+
+    # Pivot data to create a matrix for the heatmap
+    heatmap_data = st.session_state["download_df"].pivot_table(
+        index="time", columns="weekday", values=temp_col, aggfunc="mean"
+    )
+
+    # Plot the heatmap
+    fig = px.imshow(
+        heatmap_data,
+        labels={"x": "Weekday", "y": "Time", "color": temp_col},
+        color_continuous_scale="bluered",  # Adjust color scale if needed
+        title="Temperature Heatmap by Weekday and Time",
+        aspect="auto",
+    )
+
+    # Optional: Update x-axis to put weekday labels on top
+    fig.update_xaxes(side="top")
+    fig.update_layout(
+        autosize=True,  # Let Plotly resize automatically
+        width=None,  # Automatically adjusts based on container size
+        height=1000,  # You can adjust the height if needed
+        xaxis=dict(
+            tickangle=45,  # Rotate the x-axis labels to 45 degrees to prevent overlap
+            tickmode="array",  # Use an array mode to define ticks manually if needed
+            tickvals=heatmap_data.columns,  # Ensure ticks match the columns (weekdays)
+            ticktext=heatmap_data.columns,  # Show the weekday names properly
+            ticklabelmode="instant",  # Show all labels at once without aggregation
+            ticklen=10,  # Length of the ticks
+        ),
+        margin=dict(
+            b=100,  # Increase bottom margin to give more space for x-axis labels
+            t=50,  # Adjust top margin for the title
+            l=50,  # Left margin
+            r=50,  # Right margin
+        ),
+    )
+
+    # Display the heatmap using Streamlit
+    st.plotly_chart(figure_or_data=fig, use_container_width=True)

@@ -27,7 +27,7 @@ analysis_specs:
 
 db:
     db_name: !!str "test5.db"
-    table_name: !!str "temp_readings"
+    table_name: !!str "Readings"
     round_decimal: !!int 1
     column_names:
         timestamp: !!str "Timestamp"
@@ -38,6 +38,9 @@ db:
         humidity: !!str "Humidty"
         dew_point: !!str "Dew_Point"
         pressure: !!str "Pressure"
+        weekday: !!str "Weekday"
+        hour_interval: !!str "Hour Interval"
+        pump_activation: !!str "Pump Activation"
 
 
 # TODO attributes to make modifiable:
