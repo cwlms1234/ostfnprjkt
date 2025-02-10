@@ -24,6 +24,8 @@ def generate_synthetic_data():
     median_temp = []
     pressure = []
     temperature = []
+    hour_interval = []
+    pump_activation = []
 
     start_date = datetime(2024, 2, 5)  # Starting date
     current_time = start_date  # Set current_time to the start date
