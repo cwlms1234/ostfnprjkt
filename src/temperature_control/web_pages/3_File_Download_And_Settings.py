@@ -3,6 +3,7 @@ from datetime import datetime, time
 import pandas as pd
 import streamlit as st
 from utils.general_utils import fetch_config, write_config
+from utils.plots import create_heatmap_plot
 from utils.sql_utils import execute_sql_select, execute_sql_to_df
 
 if "download_df" not in st.session_state:
@@ -16,7 +17,7 @@ db_config = st.session_state["config"]["db"]
 db_name = st.session_state["config"]["db"]["db_name"]
 table_name = st.session_state["config"]["db"]["table_name"]
 timestamp_col = st.session_state["config"]["db"]["column_names"]["timestamp"]
-reading_col = st.session_state["config"]["db"]["column_names"]["temperature"]
+temp_col = st.session_state["config"]["db"]["column_names"]["temperature"]
 median_col = st.session_state["config"]["db"]["column_names"]["median"]
 mean_col = st.session_state["config"]["db"]["column_names"]["mean"]
 max_col = st.session_state["config"]["db"]["column_names"]["max"]
@@ -55,6 +56,16 @@ end_date = st.date_input(
     max_value=newest_timestamp,
 )
 
+# TODO select weekday and maybe hour:
+# values = range(5)
+# labels = ['first','second','third','fourth','fifth']
+
+# selection = st.select_slider('Choose a range',values,value=(1,3), format_func=(lambda x:labels[x]))
+
+# st.write(f'The selection is {selection} with values having type {type(selection[0])}.')
+
+###
+
 # Make sure single day queries return data
 if start_date == end_date:
     start_date = datetime.combine(start_date, time.min)
@@ -65,7 +76,7 @@ if start_date == end_date:
 # Set up button row
 col1, col2, col3 = st.columns(spec=3)
 
-with col1:
+with col1:  # TODO adjust select to be more specific than *
     if st.button(label="Execute Search", use_container_width=True):
         query = f"""SELECT * 
                     FROM {table_name} 
@@ -169,3 +180,11 @@ with st.expander(label="Adjust config:"):
 # TODO make layout prettier
 # TODO add value parameter based on config to number input
 # TODO read config on every loop in data_collector
+
+if "download_df" in st.session_state and len(st.session_state["download_df"]) > 1:
+    figure = create_heatmap_plot(
+        st.session_state["download_df"], st.session_state["config"]
+    )
+
+    # Display the heatmap using Streamlit
+    st.plotly_chart(figure_or_data=figure, use_container_width=True)

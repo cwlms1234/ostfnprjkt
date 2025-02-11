@@ -10,9 +10,13 @@ db:
     pressure: Pressure
     temperature: Temperature
     timestamp: Timestamp
+    weekday: Weekday
+    hour_interval: "Hour Interval"
+    pump_activation: "Pump Activation"
+
   db_name: test6.db
   round_decimal: 1
-  table_name: temp_readings
+  table_name: Readings
 execution_specs:
   update_frequency: 60
 status_messages:
