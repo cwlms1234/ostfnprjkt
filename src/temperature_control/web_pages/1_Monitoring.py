@@ -103,6 +103,6 @@ while True:
         ]["activation_threshold"]
         line_chart_placeholder.line_chart(
             data=interval_df, x=None, y=[temp_col, "activation_threshold"]
-        )  # TODO fetch from config
+        )
 
     time.sleep(6)  # TODO time.sleep(run_config["execution_specs"]["update_frequency"])

@@ -1,10 +1,11 @@
+import random
 import sqlite3
 from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
 
-from temperature_control.utils.general_utils import fetch_config
+from temperature_control.utils.general_utils import fetch_config, get_timestamp
 
 
 def generate_synthetic_data():
@@ -26,8 +27,9 @@ def generate_synthetic_data():
     temperature = []
     hour_interval = []
     pump_activation = []
+    update_interval = []
 
-    start_date = datetime(2024, 2, 5)  # Starting date
+    start_date = get_timestamp() - timedelta(days=365) # Starting date
     current_time = start_date  # Set current_time to the start date
 
     # Simulate the data for each update interval (every `update_frequency` seconds)
@@ -44,6 +46,8 @@ def generate_synthetic_data():
         median_temp.append(round(np.random.uniform(15, 30), round_decimal))
         pressure.append(round(np.random.uniform(1000, 1030), round_decimal))
         temperature.append(round(np.random.uniform(15, 35), round_decimal))
+        pump_activation.append(random.choice([0, cfg["execution_specs"]["update_frequency"]]))
+        update_interval.append(cfg["execution_specs"]["update_frequency"])
 
         # Increment the current time by `update_frequency` seconds
         current_time += timedelta(seconds=update_frequency)
@@ -59,6 +63,8 @@ def generate_synthetic_data():
             col_names["mean"]: mean_temp,
             col_names["median"]: median_temp,
             col_names["pressure"]: pressure,
+            col_names["pump_activation"]: pump_activation,
+            col_names["update_interval"]: update_interval,
         }
     )
 
@@ -76,7 +82,9 @@ def generate_synthetic_data():
         {col_names["max"]} REAL,
         {col_names["mean"]} REAL,
         {col_names["median"]} REAL,
-        {col_names["pressure"]} REAL
+        {col_names["pressure"]} REAL,
+        {col_names["pump_activation"]} INT,
+        {col_names["update_interval"]} INT
     );
     """)
 
@@ -88,8 +96,8 @@ def generate_synthetic_data():
     for _, row in data.iterrows():
         insert_stmnt = f"""
         INSERT INTO {db_cfg["table_name"]} (
-                    {col_names["timestamp"]}, {col_names["temperature"]}, {col_names["dew_point"]}, {col_names["humidity"]}, {col_names["max"]}, {col_names["mean"]}, {col_names["median"]}, {col_names["pressure"]} 
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    {col_names["timestamp"]}, {col_names["temperature"]}, {col_names["dew_point"]}, {col_names["humidity"]}, {col_names["max"]}, {col_names["mean"]}, {col_names["median"]}, {col_names["pressure"]}, {col_names["pump_activation"]}, {col_names["update_interval"]} 
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         cursor.execute(insert_stmnt, tuple(row))
 

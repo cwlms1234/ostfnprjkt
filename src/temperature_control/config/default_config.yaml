@@ -16,7 +16,7 @@ status_messages:
 
 execution_specs:
     # Specify the frequency with which the program updates data.
-    update_frequency: !!int 60 # in seconds
+    update_frequency: !!int 30 # in seconds
 
 #csv_headers:
 #    timestamp: !!str "Time"
@@ -39,8 +39,9 @@ db:
         dew_point: !!str "Dew_Point"
         pressure: !!str "Pressure"
         weekday: !!str "Weekday"
-        hour_interval: !!str "Hour Interval"
-        pump_activation: !!str "Pump Activation"
+        hour_interval: !!str "Hour_Interval"
+        pump_activation: !!str "Pump_Activation"
+        update_interval: !!str "Update_Interval"
 
 
 # TODO attributes to make modifiable:

@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 
 
-def create_heatmap_plot(df: pd.DataFrame, cfg: dict):
+def create_heatmap_plot(df: pd.DataFrame, cfg: dict): # TODO fix timestamp error
     col_names = cfg["db"]["column_names"]
 
     # Ensure 'timestamp_col' is in datetime format
@@ -65,4 +65,36 @@ def create_heatmap_plot(df: pd.DataFrame, cfg: dict):
         ),
     )
 
+    return fig
+
+def create_pump_diagram(df: pd.DataFrame, cfg: dict):
+    activity_sum = df[cfg["db"]["column_names"]["update_interval"]].sum()
+    pump_activity_sum = df[cfg["db"]["column_names"]["pump_activation"]].sum()
+    uptime_ratio = pump_activity_sum/activity_sum
+
+    # Create a DataFrame for the pie chart
+    pie_data = pd.DataFrame({
+    "Category": ["inactive", "active"],
+    "Value": [uptime_ratio * 100, 100 - (uptime_ratio * 100)]  # Convert ratio to percentage
+    })
+
+    # Create the pie chart
+    return px.pie(pie_data, names="Category", values="Value", title=f"Pump Activation Ratio: {uptime_ratio*100:.2f}%")
+
+# def create_temperature_distribution_chart(df: pd.DataFrame, cfg:dict):
+#     # Create temperature bins with a step of 1°C
+#     df['temp_bin'] = pd.cut(df[cfg["db"]["column_names"]["temperature"]], bins=range(int(df[cfg["db"]["column_names"]["temperature"]].min()), int(df[cfg["db"]["column_names"]["temperature"]].max()) + 2), right=False)
+#     # Count the values in each bin
+#     bin_counts = df['temp_bin'].value_counts().reset_index().astype(str)
+
+#     bin_counts.columns = ['Temperature Bin', 'Count']
+    
+
+#     # Create a bar chart to show the distribution
+#     return px.bar(bin_counts, x='Temperature Bin', y='Count', title='Temperature Distribution in 1°C Steps')
+
+def create_temperature_distribution_chart(df: pd.DataFrame, cfg: dict):
+    df["Temp Interval"] = df[cfg["db"]["column_names"]["temperature"]].round().astype(int)
+    fig = px.histogram(df, x="Temp Interval")
+    fig.update_layout(bargap=0.2)
     return fig

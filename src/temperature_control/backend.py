@@ -75,7 +75,8 @@ def main():
         '{column_names["pressure"]}' FLOAT,
         '{column_names["weekday"]}' STRING,
         '{column_names["hour_interval"]}' INTEGER,
-        '{column_names["pump_activation"]}' INTEGER
+        '{column_names["pump_activation"]}' INTEGER,
+        '{column_names["update_interval"]}, INTEGER
     )
     """
 
@@ -108,6 +109,7 @@ def main():
                 column_names["pressure"]: pressure,
                 column_names["humidity"]: humidity,
                 column_names["dew_point"]: dew_point,
+                column_names["update_interval"]: run_config["execution_specs"]["update_frequency"],
             }
 
             # Calculate relevant timeframe:
@@ -122,6 +124,7 @@ def main():
             FROM {db_cfg["table_name"]}
             WHERE {column_names["timestamp"]} >= '{formatted_interval}'
             """
+            
             interval_temp_query_result = execute_sql_select(
                 db_cfg["db_name"], interval_temp_query
             )

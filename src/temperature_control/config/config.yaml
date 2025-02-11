@@ -11,14 +11,15 @@ db:
     temperature: Temperature
     timestamp: Timestamp
     weekday: Weekday
-    hour_interval: "Hour Interval"
-    pump_activation: "Pump Activation"
+    hour_interval: "Hour_Interval"
+    pump_activation: "Pump_Activation" 
+    update_interval: "Update_Interval"
 
   db_name: test6.db
   round_decimal: 1
   table_name: Readings
 execution_specs:
-  update_frequency: 60
+  update_frequency: 30
 status_messages:
   normal: asdf
 temperature_thresholds:

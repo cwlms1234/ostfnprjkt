@@ -2,6 +2,7 @@ from datetime import datetime, time
 
 import pandas as pd
 import streamlit as st
+from temperature_control.utils.plots import create_pump_diagram, create_temperature_distribution_chart
 from utils.general_utils import fetch_config, write_config
 from utils.plots import create_heatmap_plot
 from utils.sql_utils import execute_sql_select, execute_sql_to_df
@@ -14,6 +15,7 @@ else:
 
 preview_df = False
 plotly_chart = False
+executed_search = False
 
 st.session_state["config"] = fetch_config()
 
@@ -88,10 +90,11 @@ with left_stat_button:  # TODO adjust select to be more specific than *
                     WHERE {timestamp_col} >= '{start_date}' 
                     AND {timestamp_col} <= '{end_date}'"""
         st.session_state["download_df"] = execute_sql_to_df(db_name, query)
-        st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
+        executed_search = True
+        #st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
     if st.button(
-        label="Create Heatmap",
+        label="Show Heatmap",
         use_container_width=True,
         disabled=not st.session_state["df_exists"],
     ):
@@ -106,6 +109,13 @@ with middle_stat_button:
         disabled=not st.session_state["df_exists"],
     ):
         preview_df = True
+    
+    if st.button(
+        label="Show Temp Distribution",
+        use_container_width=True,
+        disabled=not st.session_state["df_exists"],
+    ):
+        plotly_chart = create_temperature_distribution_chart(st.session_state["download_df"], st.session_state["config"])
 
 with right_stat_button:
     st.download_button(
@@ -117,11 +127,21 @@ with right_stat_button:
         disabled=not st.session_state["df_exists"],
     )
 
+    if st.button(
+        label="Show Pump Uptime",
+        use_container_width=True,
+        disabled=not st.session_state["df_exists"],
+    ):
+        plotly_chart = create_pump_diagram(st.session_state["download_df"], st.session_state["config"])
+
 if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)
 
 if plotly_chart:
     st.plotly_chart(figure_or_data=plotly_chart, use_container_width=True)
+
+if executed_search:
+    st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
 st.markdown("#")
 
