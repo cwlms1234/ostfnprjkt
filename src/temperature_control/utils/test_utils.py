@@ -5,7 +5,18 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-from temperature_control.utils.general_utils import fetch_config, get_timestamp
+from temperature_control.utils.general_utils import fetch_config, format_timestamp, get_timestamp
+
+def fetch_temperature_measuring_test(test_dict: dict) -> int:
+    """Fetch a random int to simulate a temperature reading"""
+    min_limit = test_dict["lower"]
+    max_limit = test_dict["upper"]
+
+    return random.randrange(min_limit, max_limit, 1)
+
+
+def fetch_humidity_test() -> float:
+    return random.randrange(200, 950, 1) / 10
 
 
 def generate_synthetic_data():
@@ -38,7 +49,7 @@ def generate_synthetic_data():
         0, total_seconds, update_frequency
     ):  # Update in intervals of `update_frequency`
         # Generate data for the current time
-        timestamps.append(current_time.strftime("%Y-%m-%d %H:%M:%S"))
+        timestamps.append(str(current_time))
         dew_point.append(round(np.random.uniform(0, 20), round_decimal))
         humidity.append(round(np.random.uniform(30, 90), round_decimal))
         max_temp.append(round(np.random.uniform(15, 35), round_decimal))

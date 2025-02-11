@@ -3,10 +3,9 @@
 # Humdity
 
 
-from measuring_assets.test_prop import (
-    fetch_humidity_test,
-    fetch_temperature_measuring_test,
-)
+
+
+from temperature_control.utils.test_utils import fetch_humidity_test, fetch_temperature_measuring_test
 
 
 def get_current_humidity():
