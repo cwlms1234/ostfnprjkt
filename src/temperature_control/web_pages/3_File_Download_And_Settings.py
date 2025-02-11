@@ -2,10 +2,14 @@ from datetime import datetime, time
 
 import pandas as pd
 import streamlit as st
-from temperature_control.utils.plots import create_pump_diagram, create_temperature_distribution_chart
 from utils.general_utils import fetch_config, write_config
 from utils.plots import create_heatmap_plot
 from utils.sql_utils import execute_sql_select, execute_sql_to_df
+
+from temperature_control.utils.plots import (
+    create_pump_diagram,
+    create_temperature_distribution_chart,
+)
 
 if "download_df" not in st.session_state:
     st.session_state["download_df"] = pd.DataFrame()
@@ -91,7 +95,7 @@ with left_stat_button:  # TODO adjust select to be more specific than *
                     AND {timestamp_col} <= '{end_date}'"""
         st.session_state["download_df"] = execute_sql_to_df(db_name, query)
         executed_search = True
-        #st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
+        # st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
     if st.button(
         label="Show Heatmap",
@@ -109,13 +113,15 @@ with middle_stat_button:
         disabled=not st.session_state["df_exists"],
     ):
         preview_df = True
-    
+
     if st.button(
         label="Show Temp Distribution",
         use_container_width=True,
         disabled=not st.session_state["df_exists"],
     ):
-        plotly_chart = create_temperature_distribution_chart(st.session_state["download_df"], st.session_state["config"])
+        plotly_chart = create_temperature_distribution_chart(
+            st.session_state["download_df"], st.session_state["config"]
+        )
 
 with right_stat_button:
     st.download_button(
@@ -132,7 +138,9 @@ with right_stat_button:
         use_container_width=True,
         disabled=not st.session_state["df_exists"],
     ):
-        plotly_chart = create_pump_diagram(st.session_state["download_df"], st.session_state["config"])
+        plotly_chart = create_pump_diagram(
+            st.session_state["download_df"], st.session_state["config"]
+        )
 
 if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)

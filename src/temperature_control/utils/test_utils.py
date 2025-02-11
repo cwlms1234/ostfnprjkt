@@ -1,6 +1,6 @@
 import random
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,7 @@ def generate_synthetic_data():
     pump_activation = []
     update_interval = []
 
-    start_date = get_timestamp() - timedelta(days=365) # Starting date
+    start_date = get_timestamp() - timedelta(days=365)  # Starting date
     current_time = start_date  # Set current_time to the start date
 
     # Simulate the data for each update interval (every `update_frequency` seconds)
@@ -46,7 +46,9 @@ def generate_synthetic_data():
         median_temp.append(round(np.random.uniform(15, 30), round_decimal))
         pressure.append(round(np.random.uniform(1000, 1030), round_decimal))
         temperature.append(round(np.random.uniform(15, 35), round_decimal))
-        pump_activation.append(random.choice([0, cfg["execution_specs"]["update_frequency"]]))
+        pump_activation.append(
+            random.choice([0, cfg["execution_specs"]["update_frequency"]])
+        )
         update_interval.append(cfg["execution_specs"]["update_frequency"])
 
         # Increment the current time by `update_frequency` seconds
