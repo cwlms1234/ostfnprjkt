@@ -8,8 +8,13 @@ from utils.sql_utils import execute_sql_select, execute_sql_to_df
 
 if "download_df" not in st.session_state:
     st.session_state["download_df"] = pd.DataFrame()
+    st.session_state["df_exists"] = False
+else:
+    st.session_state["df_exists"] = True
 
 preview_df = False
+plotly_chart = False
+
 st.session_state["config"] = fetch_config()
 
 # Create more human readable variable names for config:
@@ -74,9 +79,9 @@ if start_date == end_date:
     )  # TODO use actual timestamp if this is set to current date
 
 # Set up button row
-col1, col2, col3 = st.columns(spec=3)
+left_stat_button, middle_stat_button, right_stat_button = st.columns(spec=3)
 
-with col1:  # TODO adjust select to be more specific than *
+with left_stat_button:  # TODO adjust select to be more specific than *
     if st.button(label="Execute Search", use_container_width=True):
         query = f"""SELECT * 
                     FROM {table_name} 
@@ -85,11 +90,16 @@ with col1:  # TODO adjust select to be more specific than *
         st.session_state["download_df"] = execute_sql_to_df(db_name, query)
         st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
-with col2:
+    if st.button(label="Create Heatmap", use_container_width=True, disabled=not st.session_state["df_exists"]):
+        plotly_chart = create_heatmap_plot(
+            st.session_state["download_df"], st.session_state["config"]
+        )
+
+with middle_stat_button:
     if st.button(label="Preview Data", use_container_width=True):
         preview_df = True
 
-with col3:
+with right_stat_button:
     st.download_button(
         label="Download as CSV",  # TODO round filename if 1 day interval
         data=st.session_state["download_df"].to_csv().encode("utf-8"),
@@ -101,14 +111,17 @@ with col3:
 if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)
 
+if plotly_chart:
+    st.plotly_chart(figure_or_data=plotly_chart , use_container_width=True)
+
 st.markdown("#")
 
 
 with st.expander(label="Adjust config:"):
     st.write("Measuring Parameters:")
 
-    col4, col5, col6 = st.columns([1, 1, 1])
-    with col4:
+    top_left_cfg_button, top_middle_cfg_button, top_right_cfg_button = st.columns([1, 1, 1])
+    with top_left_cfg_button:
         update_frequency_minutes = st.number_input(
             label="Update interval (minutes)",
             step=0.5,
@@ -120,7 +133,7 @@ with st.expander(label="Adjust config:"):
             update_frequency_minutes * 60
         )
 
-    with col5:
+    with top_middle_cfg_button:
         min_threshold = st.number_input(
             label="Deactivation Threshold (°C)",
             step=1,
@@ -132,7 +145,7 @@ with st.expander(label="Adjust config:"):
             "deactivation_threshold"
         ] = min_threshold
 
-    with col6:
+    with top_right_cfg_button:
         max_threshold = st.number_input(
             label="Activation Threshold (°C)",
             step=1,
@@ -146,8 +159,8 @@ with st.expander(label="Adjust config:"):
 
     st.write("Monitoring Parameters:")
 
-    col7, col8, col9 = st.columns([1, 1, 1])
-    with col7:
+    middle_left_cfg_button, middle_middle_cfg_button, middle_right_cfg_button = st.columns([1, 1, 1])
+    with middle_left_cfg_button:
         warning_limit = st.number_input(
             label="Warning value (°C)",
             step=1,
@@ -156,7 +169,7 @@ with st.expander(label="Adjust config:"):
         st.session_state["config"]["temperature_thresholds"]["warning_limit"] = (
             warning_limit
         )
-    with col8:
+    with middle_middle_cfg_button:
         alert_limit = st.number_input(
             label="Alert value (°C)",
             step=1,
@@ -165,15 +178,15 @@ with st.expander(label="Adjust config:"):
         st.session_state["config"]["temperature_thresholds"]["alert_limit"] = (
             alert_limit
         )
-    with col9:
+    with middle_right_cfg_button:
         pass
 
-    col10, col11 = st.columns(2)
-    with col10:
+    bottom_left_cfg_button, bottom_right_cfg_button = st.columns(2)
+    with bottom_left_cfg_button:
         if st.button(label="Write to config", use_container_width=True):
             print(st.session_state["config"])
             write_config(st.session_state["config"])
-    with col11:
+    with bottom_right_cfg_button:
         if st.button(label="Load default config", use_container_width=True):
             write_config(fetch_config("default_config.yaml"))
 
@@ -181,10 +194,4 @@ with st.expander(label="Adjust config:"):
 # TODO add value parameter based on config to number input
 # TODO read config on every loop in data_collector
 
-if "download_df" in st.session_state and len(st.session_state["download_df"]) > 1:
-    figure = create_heatmap_plot(
-        st.session_state["download_df"], st.session_state["config"]
-    )
 
-    # Display the heatmap using Streamlit
-    st.plotly_chart(figure_or_data=figure, use_container_width=True)
