@@ -100,7 +100,11 @@ with left_stat_button:  # TODO adjust select to be more specific than *
         )
 
 with middle_stat_button:
-    if st.button(label="Preview Data", use_container_width=True):
+    if st.button(
+        label="Preview Data",
+        use_container_width=True,
+        disabled=not st.session_state["df_exists"],
+    ):
         preview_df = True
 
 with right_stat_button:
@@ -110,6 +114,7 @@ with right_stat_button:
         file_name=f"{start_date}_{end_date}.csv",
         mime="text/csv",
         use_container_width=True,
+        disabled=not st.session_state["df_exists"],
     )
 
 if preview_df:
