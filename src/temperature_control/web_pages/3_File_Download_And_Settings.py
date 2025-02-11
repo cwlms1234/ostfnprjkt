@@ -90,7 +90,11 @@ with left_stat_button:  # TODO adjust select to be more specific than *
         st.session_state["download_df"] = execute_sql_to_df(db_name, query)
         st.success(f"Query fechted {len(st.session_state['download_df'])} lines!")
 
-    if st.button(label="Create Heatmap", use_container_width=True, disabled=not st.session_state["df_exists"]):
+    if st.button(
+        label="Create Heatmap",
+        use_container_width=True,
+        disabled=not st.session_state["df_exists"],
+    ):
         plotly_chart = create_heatmap_plot(
             st.session_state["download_df"], st.session_state["config"]
         )
@@ -112,7 +116,7 @@ if preview_df:
     st.dataframe(data=st.session_state["download_df"], use_container_width=True)
 
 if plotly_chart:
-    st.plotly_chart(figure_or_data=plotly_chart , use_container_width=True)
+    st.plotly_chart(figure_or_data=plotly_chart, use_container_width=True)
 
 st.markdown("#")
 
@@ -120,7 +124,9 @@ st.markdown("#")
 with st.expander(label="Adjust config:"):
     st.write("Measuring Parameters:")
 
-    top_left_cfg_button, top_middle_cfg_button, top_right_cfg_button = st.columns([1, 1, 1])
+    top_left_cfg_button, top_middle_cfg_button, top_right_cfg_button = st.columns(
+        [1, 1, 1]
+    )
     with top_left_cfg_button:
         update_frequency_minutes = st.number_input(
             label="Update interval (minutes)",
@@ -159,7 +165,9 @@ with st.expander(label="Adjust config:"):
 
     st.write("Monitoring Parameters:")
 
-    middle_left_cfg_button, middle_middle_cfg_button, middle_right_cfg_button = st.columns([1, 1, 1])
+    middle_left_cfg_button, middle_middle_cfg_button, middle_right_cfg_button = (
+        st.columns([1, 1, 1])
+    )
     with middle_left_cfg_button:
         warning_limit = st.number_input(
             label="Warning value (°C)",
@@ -193,5 +201,3 @@ with st.expander(label="Adjust config:"):
 # TODO make layout prettier
 # TODO add value parameter based on config to number input
 # TODO read config on every loop in data_collector
-
-
