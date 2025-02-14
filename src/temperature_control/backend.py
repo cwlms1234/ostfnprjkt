@@ -76,7 +76,7 @@ def main():
         '{column_names["weekday"]}' STRING,
         '{column_names["hour_interval"]}' INTEGER,
         '{column_names["pump_activation"]}' INTEGER,
-        '{column_names["update_interval"]}, INTEGER
+        '{column_names["update_interval"]}' INTEGER
     )
     """
 

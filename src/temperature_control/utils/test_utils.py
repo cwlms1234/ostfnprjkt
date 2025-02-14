@@ -5,7 +5,11 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-from temperature_control.utils.general_utils import fetch_config, format_timestamp, get_timestamp
+from temperature_control.utils.general_utils import (
+    fetch_config,
+    get_timestamp,
+)
+
 
 def fetch_temperature_measuring_test(test_dict: dict) -> int:
     """Fetch a random int to simulate a temperature reading"""
