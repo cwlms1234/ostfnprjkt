@@ -24,6 +24,7 @@ def fetch_humidity_test() -> float:
 
 
 def generate_synthetic_data():
+    """Generates a db with synthetic data for the past 365 days for testing purposes"""
     cfg = fetch_config()
     db_cfg = cfg["db"]
     col_names = cfg["db"]["column_names"]
@@ -40,18 +41,17 @@ def generate_synthetic_data():
     median_temp = []
     pressure = []
     temperature = []
-    hour_interval = []
     pump_activation = []
     update_interval = []
 
     start_date = get_timestamp() - timedelta(days=365)  # Starting date
     current_time = start_date  # Set current_time to the start date
 
-    # Simulate the data for each update interval (every `update_frequency` seconds)
+    # Simulate the data for each update interval (every "update_frequency" seconds)
     total_seconds = num_days * 24 * 60 * 60  # Total seconds in the year
     for t in range(
         0, total_seconds, update_frequency
-    ):  # Update in intervals of `update_frequency`
+    ):  # Update in intervals of "update_frequency"
         # Generate data for the current time
         timestamps.append(str(current_time))
         dew_point.append(round(np.random.uniform(0, 20), round_decimal))
@@ -66,7 +66,7 @@ def generate_synthetic_data():
         )
         update_interval.append(cfg["execution_specs"]["update_frequency"])
 
-        # Increment the current time by `update_frequency` seconds
+        # Increment the current time by "update_frequency" seconds
         current_time += timedelta(seconds=update_frequency)
 
     # Create a DataFrame with the generated data
@@ -90,10 +90,11 @@ def generate_synthetic_data():
     cursor = conn.cursor()
 
     # Create the table
-    cursor.execute(f"""
+    cursor.execute(
+        f"""
     CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} (
+        {col_names["timestamp"]} TEXT,  
         {col_names["temperature"]} REAL,
-        {col_names["timestamp"]} TEXT,
         {col_names["dew_point"]} REAL,
         {col_names["humidity"]} REAL,
         {col_names["max"]} REAL,
@@ -103,7 +104,8 @@ def generate_synthetic_data():
         {col_names["pump_activation"]} INT,
         {col_names["update_interval"]} INT
     );
-    """)
+    """
+    )
 
     print(
         f"Generated data for {len(timestamps)} updates, with an update frequency of {update_frequency} seconds."

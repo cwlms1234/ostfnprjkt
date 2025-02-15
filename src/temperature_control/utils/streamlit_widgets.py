@@ -16,8 +16,9 @@ from temperature_control.utils.sql_utils import (
 )
 
 
-def check_password():
-    """Returns `True` if the user had a correct password."""
+def get_login_page():
+    """Checks user credentials before allowing access to the app"""
+    # https://docs.streamlit.io/knowledge-base/deploy/authentication-without-sso
 
     def login_form():
         """Form with widgets to collect user information"""
@@ -36,7 +37,7 @@ def check_password():
         ):
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # Don't store the username or password.
-            del st.session_state["username"]
+            # del st.session_state["username"]
         else:
             st.session_state["password_correct"] = False
 
@@ -52,8 +53,11 @@ def check_password():
 
 
 def get_cfg_widget():
+    """Allows users specified in config.yaml / admins to edit the configuration"""
     st.write("Measuring Parameters:")
+    st.session_state["config"] = fetch_config()
 
+    # Set up the top line of buttons
     top_left_cfg_button, top_middle_cfg_button, top_right_cfg_button = st.columns(3)
     with top_left_cfg_button:
         update_frequency_minutes = st.number_input(
@@ -87,14 +91,15 @@ def get_cfg_widget():
                 "activation_threshold"
             ],
         )
-        st.session_state["config"]["temperature_thresholds"][
-            "activation_threshold"
-        ] = max_threshold
+        st.session_state["config"]["temperature_thresholds"]["activation_threshold"] = (
+            max_threshold
+        )
 
     st.write("Monitoring Parameters:")
 
+    # Set up the middle line of buttons
     middle_left_cfg_button, middle_middle_cfg_button, middle_right_cfg_button = (
-        st.columns([1, 1, 1])
+        st.columns(3)
     )
     with middle_left_cfg_button:
         warning_limit = st.number_input(
@@ -102,47 +107,53 @@ def get_cfg_widget():
             step=1,
             value=st.session_state["config"]["temperature_thresholds"]["warning_limit"],
         )
-        st.session_state["config"]["temperature_thresholds"][
-            "warning_limit"
-        ] = warning_limit
+        st.session_state["config"]["temperature_thresholds"]["warning_limit"] = (
+            warning_limit
+        )
     with middle_middle_cfg_button:
         alert_limit = st.number_input(
             label="Alert value (°C)",
             step=1,
             value=st.session_state["config"]["temperature_thresholds"]["alert_limit"],
         )
-        st.session_state["config"]["temperature_thresholds"][
-            "alert_limit"
-        ] = alert_limit
+        st.session_state["config"]["temperature_thresholds"]["alert_limit"] = (
+            alert_limit
+        )
     with middle_right_cfg_button:
         pass
 
+    # Set up lower buttons to reset / write config
     bottom_left_cfg_button, bottom_right_cfg_button = st.columns(2)
     with bottom_left_cfg_button:
         if st.button(label="Write to config", use_container_width=True):
-            print(st.session_state["config"])
             write_config(st.session_state["config"])
     with bottom_right_cfg_button:
-        if st.button(label="Load default config", use_container_width=True):
+        if st.button(label="Reset to default config", use_container_width=True):
             write_config(fetch_config("default_config.yaml"))
+            st.session_state["config"] = fetch_config()
 
 
 def get_stat_widget():
-    selector = None
+    """Allows users to create a dataframe of a chosen timeframe and to download it or
+    create charts from its data"""
+    content_selector = None
     db_cfg = st.session_state["config"]["db"]
-    col_names = st.session_state["config"]["db"]["column_names"]
 
-    newest_ts = fetch_newest_timestamp(db_cfg)
-    oldest_ts = fetch_oldest_timestamp(db_cfg)
-
-    # Set up button columns
-    st.write(f"Select data interval between {oldest_ts.date()} and {newest_ts.date()}.")
+    # Initialize selection elements
+    title_placeholder = st.empty()
     start_date_select = st.empty()
     end_date_select = st.empty()
     left_stat_column, middle_stat_column, right_stat_column = st.columns(spec=3)
     content_placeholder = st.empty()
 
-    start_date = oldest_ts  # TODO Verify
+    # Let user choose timeframe:
+    newest_ts = fetch_newest_timestamp(db_cfg)
+    oldest_ts = fetch_oldest_timestamp(db_cfg)
+    title_placeholder.write(
+        f"Select data interval between {oldest_ts.date()} and {newest_ts.date()}."
+    )
+
+    start_date = oldest_ts
     start_date = start_date_select.date_input(
         label="Start Date", min_value=oldest_ts, max_value=newest_ts
     )
@@ -150,12 +161,14 @@ def get_stat_widget():
         label="End Date", min_value=start_date, max_value=newest_ts
     )
 
-    # Make sure single queries return data
+    # Make sure single day queries return data by querying the full day
     if start_date == end_date:
         start_date = datetime.combine(start_date, time.min)
         end_date = datetime.combine(end_date, time.max)
 
+    # Set up buttons to make actions / choose what content to display:
     with left_stat_column:
+        # Fetch dataframe for chosen timeframe
         if st.button(
             label="Execute Query", use_container_width=True, key="execute_query"
         ):
@@ -165,34 +178,38 @@ def get_stat_widget():
                 end_date,
             )
             st.session_state["df_exists"] = True
-            selector = "executed_query"
+            content_selector = "executed_query"
 
+        # Choose to display a diagram for temperature distribution
         if st.button(
             label="Show Temp Distribution",
             use_container_width=True,
             disabled=not st.session_state["df_exists"],
             key="show_temp_dist",
         ):
-            selector = "show_temp_distribution"
+            content_selector = "show_temp_distribution"
 
     with middle_stat_column:
+        # Show the selected dataframe
         if st.button(
             label="Preview Data",
             use_container_width=True,
             disabled=not st.session_state["df_exists"],
             key="preview data",
         ):
-            selector = "preview_df"
+            content_selector = "preview_df"
 
+        # Choose to show a heatmap
         if st.button(
             label="Show Heatmap",
             use_container_width=True,
             disabled=not st.session_state["df_exists"],
             key="show heatmap",
         ):
-            selector = "show_heatmap"
+            content_selector = "show_heatmap"
 
     with right_stat_column:
+        # Downlaod the chosen dataframe
         st.download_button(
             label="Download as CSV",
             data=st.session_state["stat_interval_df"].to_csv().encode("utf-8"),
@@ -203,22 +220,24 @@ def get_stat_widget():
             key="download data",
         )
 
+        # Choose to show a pump activity pie chart
         if st.button(
             label="Show Pump Uptime",
             use_container_width=True,
             disabled=not st.session_state["df_exists"],
             key="show pump uptime",
         ):
-            selector = "show_pump_uptime"
+            content_selector = "show_pump_uptime"
 
-    st.markdown("#")
-
-    match selector:
+    # Generate page content based on the user's choice
+    match content_selector:
         case "executed_query":
+            # Show success message
             content_placeholder.success(
                 f"Query fechted {len(st.session_state['stat_interval_df'])} lines!"
             )
         case "preview_df":
+            # Show the chosen dataframe
             content_placeholder.dataframe(
                 data=st.session_state["stat_interval_df"], use_container_width=True
             )

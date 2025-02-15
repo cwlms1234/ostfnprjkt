@@ -1,32 +1,31 @@
 analysis_specs:
   interval_minutes: 5
+authorization:
+  admins: -admin
 db:
   column_names:
     dew_point: Dew_Point
+    hour_interval: Hour_Interval
     humidity: Humidty
     max: Max
     mean: Mean
     median: Median
     pressure: Pressure
+    pump_activation: Pump_Activation
     temperature: Temperature
     timestamp: Timestamp
+    update_interval: Update_Interval
     weekday: Weekday
-    hour_interval: "Hour_Interval"
-    pump_activation: "Pump_Activation" 
-    update_interval: "Update_Interval"
-
-  db_name: test6.db
+  db_name: test5.db
+  retention_days: 30
   round_decimal: 1
   table_name: Readings
 execution_specs:
   update_frequency: 30
-status_messages:
-  normal: asdf
 temperature_thresholds:
   activation_threshold: 40
   alert_limit: 40
-  corridor_size: 5
-  deactivation_threshold: 20
+  deactivation_threshold: 30
   warning_limit: 35
 test_values:
   lower: 20
