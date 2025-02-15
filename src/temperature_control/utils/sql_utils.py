@@ -131,7 +131,6 @@ def table_maintenance(
         statement = f"""DELETE
                         FROM {db_cfg["table_name"]}
                         WHERE {db_cfg["column_names"]["timestamp"]} < '{retention_threshold}'"""
-        print(statement)
         execute_sql_update(db_cfg["db_name"], statement, logger)
 
     except sqlite3.OperationalError as e:
