@@ -145,7 +145,7 @@ def main():
             f"Error occurred in backend.py: {e} \nTraceback: {traceback.format_exc()}"
         )
     finally:
-        # Cleanup
+        # TODO add GPIO Zero Cleanup
         pass
 
 
