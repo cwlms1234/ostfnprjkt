@@ -19,22 +19,13 @@ def calculate_interval_stats(db_cfg: dict, interval_temps: list) -> dict:
     }
 
 
-def toggle_pump(cfg: dict, data: dict, previous_run: dict | None) -> dict:
-    """Compare the current temperature to the activation / deactivation threshold and toggle the pump accordingly
-    returns the time for which the pump was activated"""
+def toggle_pump(cfg: dict, data: dict, previous_run: bool | None) -> bool:
+    """Compare the current temperature to the activation / deactivation threshold and toggle the pump accordingly"""
     col_names = cfg["db"]["column_names"]
-    if (
+    return bool(
         data[col_names["temperature"]]
         >= cfg["temperature_thresholds"]["activation_threshold"]
-    ) or (
-        data[col_names["temperature"]]
+        or data[col_names["temperature"]]
         >= cfg["temperature_thresholds"]["deactivation_threshold"]
-        and isinstance(previous_run, dict)
-        and previous_run[col_names["pump_activation"]]
-        > 0  # TODO refactor to be more concise
-    ):
-        return {
-            col_names["pump_activation"]: cfg["execution_specs"]["update_frequency"]
-        }
-    else:
-        return {col_names["pump_activation"]: 0}
+        and previous_run == True
+    )

@@ -6,6 +6,7 @@ import traceback
 from datetime import timedelta
 
 import pandas as pd
+from gpiozero import OutputDevice
 from utils.backend_utils import (
     calculate_interval_stats,
     toggle_pump,
@@ -49,8 +50,7 @@ def main():
     db_cfg = run_config["db"]
     column_names = db_cfg["column_names"]
     logger.info(f"\nLoaded Config:\n{json.dumps(run_config, indent=4)}\n")
-    pump_status = None
-
+    pump_status = False
     # Create Table
     create_statement = f"""
     CREATE TABLE IF NOT EXISTS {db_cfg["table_name"]} (
@@ -74,6 +74,17 @@ def main():
 
     # This will delete all data that's older than the config's "retention_days" value
     table_maintenance(db_cfg)
+
+    # Initialize Output device:
+    if run_config["execution_specs"].get("gpio_pin"):
+        relais = OutputDevice(
+            pin=run_config["execution_specs"].get("gpio_pin"),
+            active_high=True,
+            initial_value=False,
+        )
+
+    else:
+        relais = None
 
     # Allow delay for initialization before starting frontend
     time.sleep(2)
@@ -134,8 +145,23 @@ def main():
             data.update(calculate_interval_stats(db_cfg, measurements_list))
 
             # Check whether the pump has to be activated
-            pump_status = toggle_pump(run_config, data, pump_status)
-            data.update(pump_status)
+            pump_status = toggle_pump(
+                cfg=run_config,
+                data=data,
+                previous_run=pump_status,
+            )
+            # Pump_status
+            if relais and pump_status:
+                relais.on()
+            elif relais:
+                relais.off()
+            data.update(
+                {
+                    column_names["pump_activation"]: run_config["execution_specs"][
+                        "update_frequency"
+                    ]
+                }
+            )
 
             data_df = pd.DataFrame([data])
             execute_df_to_sql(db_cfg, data_df)
@@ -145,8 +171,8 @@ def main():
             f"Error occurred in backend.py: {e} \nTraceback: {traceback.format_exc()}"
         )
     finally:
-        # TODO add GPIO Zero Cleanup
-        pass
+        if relais:
+            relais.off()
 
 
 if __name__ == "__main__":

@@ -13,6 +13,8 @@ test_values: # TODO remove after testing
 execution_specs:
     # Specify the frequency with which the program updates data.
     update_frequency: !!int 30 # in seconds
+    # Specify which pin the output device will be connected to
+    # gpio_pin: !!int None
 
 analysis_specs:
     interval_minutes: !!int 5 # in minutes

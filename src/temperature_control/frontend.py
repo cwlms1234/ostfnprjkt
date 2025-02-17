@@ -49,6 +49,8 @@ with recent_max_col:
 with live_humidity_col:
     live_humidity_placeholder = st.empty()
 
+alerting_placeholder = st.empty()
+
 measure_metric_placeholder.metric(label="Live Temperature", value=None)
 average_metric_placeholder.metric(label="Recent Average", value=None)
 median_metric_placeholder.metric(label="Recent Median", value=None)
@@ -115,6 +117,25 @@ while True:
         delta = 0
 
     # Update placeholders with (fresh) data
+    if (
+        latest_reading
+        >= st.session_state["config"]["temperature_thresholds"]["warning_limit"]
+        and latest_reading
+        < st.session_state["config"]["temperature_thresholds"]["alert_limit"]
+    ):
+        alerting_placeholder.warning(
+            f"Warning! Temperature above {st.session_state['config']['temperature_thresholds']['warning_limit']}!"
+        )
+    elif (
+        latest_reading
+        >= st.session_state["config"]["temperature_thresholds"]["alert_limit"]
+    ):
+        alerting_placeholder.error(
+            f"Alert! Temperature above {st.session_state['config']['temperature_thresholds']['alert_limit']}!"
+        )
+    else:
+        alerting_placeholder = st.empty()
+
     recent_label = (
         f"{st.session_state['config']['analysis_specs']['interval_minutes']} minute"
     )

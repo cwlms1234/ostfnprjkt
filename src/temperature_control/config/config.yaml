@@ -17,7 +17,7 @@ db:
     update_interval: Update_Interval
     weekday: Weekday
   db_name: test5.db
-  retention_days: 30
+  retention_days: 365
   round_decimal: 1
   table_name: Readings
 execution_specs:
