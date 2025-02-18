@@ -27,5 +27,5 @@ def toggle_pump(cfg: dict, data: dict, previous_run: bool | None) -> bool:
         >= cfg["temperature_thresholds"]["activation_threshold"]
         or data[col_names["temperature"]]
         >= cfg["temperature_thresholds"]["deactivation_threshold"]
-        and previous_run == True
+        and previous_run is True
     )

@@ -137,7 +137,7 @@ while True:
         alerting_placeholder = st.empty()
 
     recent_label = (
-        f"{st.session_state['config']['analysis_specs']['interval_minutes']} minute"
+        f"({st.session_state['config']['analysis_specs']['interval_minutes']} minutes)"
     )
 
     measure_metric_placeholder.metric(
@@ -148,13 +148,13 @@ while True:
     )
 
     average_metric_placeholder.metric(
-        label=f"{recent_label} Average", value=f"{latest_row[mean_col].item()}°"
+        label=f"Average{recent_label}", value=f"{latest_row[mean_col].item()}°"
     )
     median_metric_placeholder.metric(
-        label=f"{recent_label} Median", value=f"{latest_row[median_col].item()}°"
+        label=f"Median{recent_label}", value=f"{latest_row[median_col].item()}°"
     )
     max_metric_placeholder.metric(
-        label=f"{recent_label} Max", value=f"{latest_row[max_col].item()}°"
+        label=f"Max{recent_label}", value=f"{latest_row[max_col].item()}°"
     )
     live_humidity_placeholder.metric(
         label="Live Humidity", value=f"{latest_row[humidity_col].item()}%"
