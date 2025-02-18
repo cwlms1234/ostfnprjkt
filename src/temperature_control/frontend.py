@@ -83,7 +83,6 @@ with stats_tab:
     get_stat_widget()
 
 
-# TODO If user in admins
 if (
     st.session_state["username"]
     in st.session_state["config"]["authorization"]["admins"]
