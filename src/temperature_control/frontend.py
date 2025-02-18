@@ -133,7 +133,7 @@ while True:
             f"Alert! Temperature above {st.session_state['config']['temperature_thresholds']['alert_limit']}!"
         )
     else:
-        alerting_placeholder = st.empty()
+        alerting_placeholder.empty()
 
     recent_label = (
         f"({st.session_state['config']['analysis_specs']['interval_minutes']} minutes)"
