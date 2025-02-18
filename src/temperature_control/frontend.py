@@ -3,7 +3,7 @@ from time import sleep
 
 import pandas as pd
 import streamlit as st
-from utils.general_utils import fetch_config
+from temperature_control.utils.general_utils import fetch_config
 
 from temperature_control.utils.general_utils import (
     format_timestamp,

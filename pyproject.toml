@@ -44,7 +44,7 @@ where= ["src"]
 
 
 [project.scripts]
-cooling_app = "ostfnprjkt.backend:main"
+cooling_app = "temperature_control.backend:main"
 
 [dependency-groups]
 dev = [

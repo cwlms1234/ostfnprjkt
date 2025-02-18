@@ -7,29 +7,29 @@ from datetime import timedelta
 
 import pandas as pd
 from gpiozero import OutputDevice
-from utils.backend_utils import (
+from temperature_control.utils.backend_utils import (
     calculate_interval_stats,
     toggle_pump,
     unpack_query_result,
 )
-from utils.general_utils import (
+from temperature_control.utils.general_utils import (
     fetch_config,
     fetch_src_file_path,
     format_timestamp,
     get_timestamp,
 )
-from utils.measurering_utils import (
+from temperature_control.utils.measurering_utils import (
     get_current_humidity,
     get_current_pressure,
     get_current_temperature,
 )
-from utils.sql_utils import (
+from temperature_control.utils.sql_utils import (
     execute_df_to_sql,
     execute_sql_select,
     execute_sql_update,
     table_maintenance,
 )
-from utils.stat_utils import calculate_dew_point
+from temperature_control.utils.stat_utils import calculate_dew_point
 
 # Set up logging:
 logger = logging.getLogger()
