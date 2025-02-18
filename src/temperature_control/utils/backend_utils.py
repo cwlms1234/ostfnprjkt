@@ -1,3 +1,4 @@
+import logging
 import statistics
 
 
@@ -29,3 +30,18 @@ def toggle_pump(cfg: dict, data: dict, previous_run: bool | None) -> bool:
         >= cfg["temperature_thresholds"]["deactivation_threshold"]
         and previous_run is True
     )
+
+
+def get_console_logger() -> logging.getLogger:
+    """Returns a logger."""
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    # Create a console handler to display logs in the terminal
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    # Create a formatter and set it for the handler
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    console_handler.setFormatter(formatter)
+    # Add the handler to the logger
+    logger.addHandler(console_handler)
+    return logger

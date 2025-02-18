@@ -1,5 +1,4 @@
 import json
-import logging
 import subprocess
 import time
 import traceback
@@ -7,8 +6,10 @@ from datetime import timedelta
 
 import pandas as pd
 from gpiozero import OutputDevice
+
 from temperature_control.utils.backend_utils import (
     calculate_interval_stats,
+    get_console_logger,
     toggle_pump,
     unpack_query_result,
 )
@@ -32,21 +33,13 @@ from temperature_control.utils.sql_utils import (
 from temperature_control.utils.stat_utils import calculate_dew_point
 
 # Set up logging:
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-# Create a console handler to display logs in the terminal
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-# Create a formatter and set it for the handler
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-console_handler.setFormatter(formatter)
-# Add the handler to the logger
-logger.addHandler(console_handler)
 
 
 def main():
     # Fetch config:
     run_config = fetch_config()
+    logger = get_console_logger()
+    output_device_list = []
     db_cfg = run_config["db"]
     column_names = db_cfg["column_names"]
     logger.info(f"\nLoaded Config:\n{json.dumps(run_config, indent=4)}\n")
@@ -75,16 +68,30 @@ def main():
     # This will delete all data that's older than the config's "retention_days" value
     table_maintenance(db_cfg)
 
-    # Initialize Output device:
-    if run_config["execution_specs"].get("gpio_pin"):
-        relais = OutputDevice(
-            pin=run_config["execution_specs"].get("gpio_pin"),
-            active_high=True,
+    # Initialize Output devices:
+    if run_config["execution_specs"].get("gpio_pin_1"):
+        output_1 = OutputDevice(
+            pin=run_config["execution_specs"].get("gpio_pin_1"),
+            active_high=False,
             initial_value=False,
         )
+        output_device_list.append(output_1)
 
     else:
-        relais = None
+        output_1 = None
+
+    if run_config["execution_specs"].get("gpio_pin_2"):
+        output_2 = OutputDevice(
+            pin=run_config["execution_specs"].get("gpio_pin_2"),
+            active_high=False,
+            initial_value=False,
+        )
+        output_device_list.append(output_2)
+
+    else:
+        output_2 = None
+
+    logger.info(f"Initialized output devices {output_device_list}")
 
     # Allow delay for initialization before starting frontend
     time.sleep(2)
@@ -101,8 +108,8 @@ def main():
             # Get fresh readings
             timestamp = get_timestamp()
             temperature = get_current_temperature(run_config)
-            pressure = get_current_pressure()
-            humidity = get_current_humidity()
+            pressure = get_current_pressure(run_config)
+            humidity = get_current_humidity(run_config)
 
             dew_point = calculate_dew_point(db_cfg, temperature, humidity)
 
@@ -151,10 +158,13 @@ def main():
                 previous_run=pump_status,
             )
             # Pump_status
-            if relais and pump_status:
-                relais.on()
-            elif relais:
-                relais.off()
+            if pump_status:
+                for device in output_device_list:
+                    device.on()
+            else:
+                for device in output_device_list:
+                    device.off()
+
             data.update(
                 {
                     column_names["pump_activation"]: run_config["execution_specs"][
@@ -171,8 +181,10 @@ def main():
             f"Error occurred in backend.py: {e} \nTraceback: {traceback.format_exc()}"
         )
     finally:
-        if relais:
-            relais.off()
+        if output_1:
+            output_1.off()
+        if output_2:
+            output_2.off()
 
 
 if __name__ == "__main__":

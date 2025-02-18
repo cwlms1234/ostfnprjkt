@@ -3,7 +3,8 @@ import sqlite3
 from datetime import datetime, timedelta
 
 import pandas as pd
-from utils.general_utils import get_timestamp
+
+from temperature_control.utils.general_utils import get_timestamp
 
 
 def execute_sql_update(

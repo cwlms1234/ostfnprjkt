@@ -14,19 +14,23 @@ def get_reading_from_file(filename: str) -> str:
         return f.read()
 
 
-def get_current_humidity():
-    # reading = get_reading_from_file("sys/bus/iio:device0/in_humidityrelative_input")
-    # return float(reading)/1000
+def round_reading(config: dict, reading: float) -> float:
+    round(reading, config["db"]["round_decimal"])
+
+
+def get_current_humidity(config: dict) -> float:
+    # reading = get_reading_from_file(f"{config["execution_specs"]["i2c_device_base_path"]}/in_humidityrelative_input")
+    # return round_reading(float(reading)/1000)
     return fetch_humidity_test()
 
 
-def get_current_pressure():
-    # reading = get_reading_from_file("/sys/bus/iio/devices/iio:device0/in_pressure_input")
-    # return float(reading)*10
+def get_current_pressure(config: dict) -> float:
+    # reading = get_reading_from_file(f"{config["execution_specs"]["i2c_device_base_path"]}/in_pressure_input")
+    # return round_reading(float(reading)*10)
     return fetch_humidity_test()  # *10 hpa
 
 
 def get_current_temperature(config: dict) -> float:
-    # reading = get_reading_from_file("sys/bus/iio/devices/iio:device0_in_temp_input")
-    # return float(reading)/1000
+    # reading = get_reading_from_file(f"{config["execution_specs"]["i2c_device_base_path"]}/in_temp_input")
+    # return round_reading(float(reading)/1000)
     return fetch_temperature_measuring_test(config["test_values"])

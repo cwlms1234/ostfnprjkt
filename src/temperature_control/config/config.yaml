@@ -22,6 +22,10 @@ db:
   table_name: Readings
 execution_specs:
   update_frequency: 30
+  #gpio_pin_1: 23
+  #gpio_pin_2: 24
+  i2c_device_base_path: !!str /sys/bus/iio/devices/iio:device0
+
 temperature_thresholds:
   activation_threshold: 40
   alert_limit: 40

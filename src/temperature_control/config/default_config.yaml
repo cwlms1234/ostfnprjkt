@@ -14,7 +14,9 @@ execution_specs:
     # Specify the frequency with which the program updates data.
     update_frequency: !!int 30 # in seconds
     # Specify which pin the output device will be connected to
-    # gpio_pin: !!int None
+    # gpio_pin_1: !!int None
+    # gpio_pin_2: !!int None
+    i2c_device_base_path: !!str /sys/bus/i2c/devices/i2c-1/new_device
 
 analysis_specs:
     interval_minutes: !!int 5 # in minutes
